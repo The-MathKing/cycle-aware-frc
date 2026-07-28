@@ -3,13 +3,13 @@
 \contentsline {proof}{{Proof}{1}{}}{2}{proof.8}%
 \contentsline {theorem}{{Theorem}{4.1}{Bipartite Spectral Gap Lower Bound}}{3}{theorem.10}%
 \contentsline {proof}{{Proof}{2}{}}{3}{proof.12}%
-\contentsline {theorem}{{Theorem}{4.2}{Bipartite Cheeger Inequality}}{3}{theorem.13}%
-\contentsline {proof}{{Proof}{3}{}}{3}{proof.15}%
-\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{3}{theorem.20}%
-\contentsline {proof}{{Proof}{4}{}}{3}{proof.21}%
-\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{4}{theorem.24}%
-\contentsline {proof}{{Proof}{5}{}}{4}{proof.26}%
-\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{5}{theorem.29}%
-\contentsline {proof}{{Proof}{6}{}}{5}{proof.30}%
-\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{5}{theorem.32}%
-\contentsline {proof}{{Proof}{7}{}}{5}{proof.33}%
+\contentsline {theorem}{{Theorem}{4.2}{Bipartite Cheeger Inequality}}{3}{theorem.16}%
+\contentsline {proof}{{Proof}{3}{}}{4}{proof.18}%
+\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{4}{theorem.25}%
+\contentsline {proof}{{Proof}{4}{}}{4}{proof.26}%
+\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{5}{theorem.29}%
+\contentsline {proof}{{Proof}{5}{}}{5}{proof.31}%
+\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{5}{theorem.34}%
+\contentsline {proof}{{Proof}{6}{}}{5}{proof.35}%
+\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{6}{theorem.37}%
+\contentsline {proof}{{Proof}{7}{}}{6}{proof.38}%

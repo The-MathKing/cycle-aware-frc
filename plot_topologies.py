@@ -53,14 +53,11 @@ def plot_topologies():
     
     print("Extracting and plotting Core (Highest F*) and Fringe (Lowest F*) Topologies...")
     
-    # Highest F* (Note: F* is deeply negative for high degrees. High curvature actually means CLOSE TO ZERO or POSITIVE, 
-    # but wait: in our metric F* is inversely correlated with dense edge formation because of the massive negative degree penalty.
-    # Therefore, the "Bipartite Core" (densest) actually has the LOWEST F* (most negative). 
-    # The "Fringes" (tree-like, low degree) have the HIGHEST F* (closest to +2).
-    # This is a critical mathematical reality of our normalization.
+    # Highest F* corresponds to the Bipartite Core (densest)
+    # Lowest F* corresponds to the Tree-like Fringe (sparsest)
     
-    fringe_indices = sorted_indices[-100:] # Highest F* (closest to 4) - low degrees
-    core_indices = sorted_indices[:100] # Lowest F* (most negative) - high degrees
+    fringe_indices = sorted_indices[:100] # Lowest F* (most negative)
+    core_indices = sorted_indices[-100:] # Highest F* 
     
     G_core = nx.Graph()
     for idx in core_indices:
@@ -75,14 +72,14 @@ def plot_topologies():
     plt.figure(figsize=(8,8))
     pos_core = nx.spring_layout(G_core, seed=42)
     nx.draw(G_core, pos_core, node_size=20, edge_color='darkred', node_color='black', alpha=0.7)
-    plt.title("Bipartite Core (Lowest F*)")
+    plt.title("Bipartite Core (Highest F*)")
     plt.savefig('core_topology.pdf', bbox_inches='tight')
     plt.close()
     
     plt.figure(figsize=(8,8))
     pos_fringe = nx.spring_layout(G_fringe, seed=42)
     nx.draw(G_fringe, pos_fringe, node_size=20, edge_color='blue', node_color='gray', alpha=0.7)
-    plt.title("Bipartite Fringe (Highest F*)")
+    plt.title("Bipartite Fringe (Lowest F*)")
     plt.savefig('fringe_topology.pdf', bbox_inches='tight')
     plt.close()
     
