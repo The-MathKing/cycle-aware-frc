@@ -1,7 +1,11 @@
 \documentclass{siamart251216}
-\usepackage{amsmath, amssymb}
+\usepackage{amsmath, amssymb, amsfonts}
 \usepackage{graphicx}
 \usepackage{cleveref}
+
+% Running Head & Title
+% Abbreviated title must be 50 characters or less with no abbreviations.
+\headers{Cycle-Aware Curvature for Bipartite Networks}{A. Padarthi}
 
 \title{Cycle-Aware Forman-Ricci Curvature for Signed \& Bipartite Networks\thanks{Submitted to the editors \today.}}
 \author{A. Padarthi\thanks{Department of Mathematics (\email{author@institute.edu}).}}
@@ -10,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature ($F^*$) applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking 3-cliques by incorporating higher-order cycles ($C_4$), structural balance weighting, and a strictly bounded $\mathcal{O}(d)$ degree normalization to prevent combinatorial explosion in dense datasets.
+This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a strictly bounded degree normalization to prevent combinatorial explosion in dense datasets. By mapping the four-cycle codomain structurally to the unipartite three-cycle bounds, we provide a discrete geometric invariant that reliably evaluates structural cohesiveness in bipartite topologies without succumbing to metric collapse. The algorithm is validated against a synthetic non-homogeneous block model and scaled efficiently on the genuine user-item bipartite MovieLens network, proving algorithmic immunity to dense memory explosions while identifying crucial topological bottlenecks.
 \end{abstract}
 
 \begin{keywords}
@@ -73,4 +77,8 @@ Utilizing an optimized Sampled Dense-Dense Matrix Multiplication (SDDMM) row-by-
 
 The resulting topological curvature distribution achieved a strict mathematical normalization spread (\text{Min:} $-5636.85$, \text{Max:} $-17.00$, \text{Mean:} $-1188.79$, \text{Var:} $451744.34$), proving the theoretical codomain bounds successfully constrain geometric scaling on real-world networks without collapse.
 
+\section{Conclusion}
+This paper successfully resolves the bipartite metric collapse of Forman-Ricci Curvature by replacing the absent 3-cycle constraints with structurally bounded 4-cycle paths. The geometric formulation strictly prevents combinatorial density explosions, while effectively characterizing complex social block models and massive real-world bipartite recommendation systems within practical computational bounds.
+
+\bibliographystyle{siamplain}
 \end{document}
