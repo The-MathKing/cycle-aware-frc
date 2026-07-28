@@ -7,15 +7,15 @@
 \contentsline {proof}{{Proof}{3}{}}{5}{proof.24}%
 \contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{6}{theorem.30}%
 \contentsline {proof}{{Proof}{4}{}}{6}{proof.31}%
-\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{6}{theorem.33}%
-\contentsline {proof}{{Proof}{5}{}}{6}{proof.34}%
+\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{7}{theorem.33}%
+\contentsline {proof}{{Proof}{5}{}}{7}{proof.34}%
 \contentsline {theorem}{{Theorem}{5.3}{Parallel Time Complexity}}{7}{theorem.36}%
 \contentsline {proof}{{Proof}{6}{}}{7}{proof.37}%
 \contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{7}{theorem.40}%
-\contentsline {proof}{{Proof}{7}{}}{7}{proof.42}%
+\contentsline {proof}{{Proof}{7}{}}{8}{proof.42}%
 \contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{8}{theorem.45}%
 \contentsline {proof}{{Proof}{8}{}}{8}{proof.46}%
 \contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{8}{theorem.48}%
-\contentsline {proof}{{Proof}{9}{}}{8}{proof.49}%
+\contentsline {proof}{{Proof}{9}{}}{9}{proof.49}%
 \contentsline {theorem}{{Theorem}{6.4}{Curvature-Entropy Minimization}}{9}{theorem.53}%
 \contentsline {proof}{{Proof}{10}{}}{9}{proof.54}%
