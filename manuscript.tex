@@ -260,7 +260,7 @@ Assuming $d(u), d(v) > 1$, this algebraically simplifies to:
 \begin{equation}
 |\Delta F^*(e)| = \frac{2\gamma}{\max(d(u)-1, d(v)-1)}
 \end{equation}
-Since $\gamma = 3$, the maximum curvature disturbance caused by a single signed edge flip is $\frac{6}{\max(d(u), d(v))}$. As local density increases, the sensitivity to isolated noise approaches zero monotonically, proving the invariant is highly stable within dense structurally balanced block models.
+Since $\gamma = 3$, the maximum curvature disturbance caused by a single signed edge flip is $\frac{6}{\max(d(u), d(v))}$. As local density increases, the sensitivity to isolated noise approaches zero monotonically, establishing that the invariant is highly stable within dense structurally balanced block models.
 \end{proof}
 
 \subsection{Bipartite Von Neumann Entropy Bounds}
@@ -300,7 +300,7 @@ Southern Women* & 0.840 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} & 0.885 $\pm$ 0
 
 As shown in Table \ref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails catastrophically under high stochastic noise (Noise=0.6), where the unweighted Adjusted Rand Index (ARI) plunges to 0.231 and the Normalized Mutual Information (NMI) drops to 0.280. The collapse in NMI indicates that the stochastic perturbations generate dense, uninformative cross-partition bridges. These noisy edges erode the spectral eigenvalue separation of the standard graph Laplacian, causing the standard unweighted eigenvectors to degenerate into a uniform distribution rather than distinct community cluster centers.
 
-Conversely, substituting the standard adjacency matrix with the geometrically $F^*$-weighted matrix $W_{u,v} = \max(0, F^*(u,v))$ exclusively preserves edges with structurally positive 4-cycle neighborhoods. This cycle-aware filtering effectively eliminates the stochastic inter-community noise while amplifying intra-community invariants. The geometrically-weighted spectral matrix restores sharp spectral eigenvalue separation, allowing the leading eigenvectors to accurately partition the latent blocks. As a result, the $F^*$-weighted spectral clustering sustains an ARI of 0.785 and an NMI of 0.812 even under extreme structural entropy, proving that the curvature formulation mathematically isolates genuine bipartite communities.
+Conversely, substituting the standard adjacency matrix with the geometrically $F^*$-weighted matrix $W_{u,v} = \max(0, F^*(u,v))$ exclusively preserves edges with structurally positive 4-cycle neighborhoods. This cycle-aware filtering effectively eliminates the stochastic inter-community noise while amplifying intra-community invariants. The geometrically-weighted spectral matrix restores sharp spectral eigenvalue separation, allowing the leading eigenvectors to accurately partition the latent blocks. As a result, the $F^*$-weighted spectral clustering sustains an ARI of 0.785 and an NMI of 0.812 even under extreme structural entropy, demonstrating that the curvature formulation mathematically isolates genuine bipartite communities.
 
 
 \subsection{Heterogeneous Block Model}
@@ -314,7 +314,7 @@ The algorithm was validated on a non-homogeneous synthetic bipartite block model
 \end{figure}
 
 \subsection{Stochastic Block Model Parameter Sweeps}
-To evaluate structural stability under dynamic topological noise, a symmetric bipartite Stochastic Block Model (SBM) consisting of 200 nodes was subjected to systematic sign-inversion noise. Edges within assortative blocks were initially strictly positive (+1). Random noise was injected by flipping edge signs up to a 50\% probability threshold. As noise approached total structural entropy, the variance of the $F^*$ metric smoothly degenerated. By averaging the simulation across 30 iterative generation epochs per noise level, the chaotic noise limits were mathematically smoothed, proving that the metric reliably and monotonically quantifies the loss of structural balance without catastrophic algebraic instability.
+To evaluate structural stability under dynamic topological noise, a symmetric bipartite Stochastic Block Model (SBM) consisting of 200 nodes was subjected to systematic sign-inversion noise. Edges within assortative blocks were initially strictly positive (+1). Random noise was injected by flipping edge signs up to a 50\% probability threshold. As noise approached total structural entropy, the variance of the $F^*$ metric smoothly degenerated. By averaging the simulation across 30 iterative generation epochs per noise level, the chaotic noise limits were mathematically smoothed, demonstrating that the metric reliably and monotonically quantifies the loss of structural balance without catastrophic algebraic instability.
 
 \begin{figure}[htbp]
     \centering
@@ -352,7 +352,7 @@ To establish absolute hardware scaling limits, the optimized SpSpMM algorithm wa
     \item \textbf{Amazon Product Reviews (Video Games 5-Core):} A sparser, highly skewed bipartite e-commerce graph spanning hundreds of thousands of transactions.
 \end{enumerate}
 
-Because the unweighted degree penalty $-(d(u) + d(v))$ scales dominantly in scale-free networks, $F^*(e)$ is strongly negatively correlated with dense edge formation. We evaluate the inverse metric $-F^*(e)$ exclusively against modern state-of-the-art Deep Representation Learning \cite{hamilton2017inductive}:
+Because the unweighted degree penalty $-(d(u) + d(v))$ scales dominantly in scale-free networks, $F^*(e)$ is strongly negatively correlated with dense edge formation. We evaluate the inverse metric $-F^*(e)$ against both simple structural baselines and modern state-of-the-art Deep Representation Learning \cite{hamilton2017inductive}:
 \begin{itemize}
     \item \textbf{Heuristic Baselines:} Standard topological overlap metrics including Common Neighbors (CN), Adamic-Adar (AA), and Resource Allocation (RA) projected onto the unipartite node sets.
     \item \textbf{LightGCN (Graph Neural Network):} A state-of-the-art bipartite message-passing architecture \cite{he2020lightgcn}. We trained a 64-dimension PyTorch Geometric model using BPR loss over identical train/test splits. 
@@ -389,11 +389,19 @@ The zero-parameter deterministic $F^*$ curvature dramatically outperforms the Li
 Crucially, the computational asymmetry between these models is massive. LightGCN requires thousands of GPU tensor operations across dozens of gradient descent epochs. In stark contrast, evaluating $F^*(e)$ requires zero parameterized training. Operating strictly in $\mathcal{O}(|E| d_{max})$ time via SpSpMM, the geometric invariant achieves GNN-adjacent predictive accuracy while executing locally in seconds on consumer CPU hardware.
 
 \section{Limitations \& Sparsity Density Threshold}
-While $F^*$ successfully maps mesoscopic cohesiveness in dense environments, it is intrinsically dependent on the presence of local 4-cycles. We formulate a formal mathematical graph density threshold $\rho_c$, below which the probability of 4-cycle formation approaches zero:
-\begin{equation}
-\rho_c = \mathcal{O}\left( \frac{1}{\sqrt{|U| \cdot |V|}} \right)
-\end{equation}
-If the edge density $\rho = |E| / (|U| \cdot |V|)$ falls significantly below $\rho_c$, the topology becomes rigorously sparse and tree-like. We explicitly concede that under such strictly hierarchical conditions, the 4-cycle sum vanishes and $F^*$ mathematically collapses back into the simple linear degree penalty $F^*(e) \approx 4 - d(u) - d(v)$. In these sparse topologies, the metric is entirely ineffective at resolving complex connectivity.
+While the Cycle-Aware Forman-Ricci curvature successfully resolves the bipartite metric collapse and provides highly scalable topological evaluations, the framework is bounded by several rigorous mathematical and evaluation limitations:
+\begin{enumerate}
+    \item \textbf{Sparse Collapse:} In rigorously sparse or tree-like topologies, the 4-cycle sum vanishes and $F^*$ mathematically collapses back into the simple linear degree penalty $F^*(e) \approx 4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity.
+    \item \textbf{Bipartite-Only Constraint:} The 4-cycle formulation is explicitly tailored for bipartite networks and requires 3-cycles to be natively absent ($\Delta=0$). Applying this formulation to arbitrary unipartite graphs will result in critical algebraic failure.
+    \item \textbf{Density Threshold $\rho_c$:} We formulate a strict mathematical graph density threshold $\rho_c = \mathcal{O}(1 / \sqrt{|U| \cdot |V|})$. If the edge density falls significantly below this, the probability of 4-cycle formation approaches zero.
+    \item \textbf{Incremental Formalism:} The core concept of utilizing 4-cycles to circumvent bipartite collapse is a highly intuitive, incremental progression in network science.
+    \item \textbf{AF4 Precedent:} The formulation explicitly builds upon the AF4 structure previously established by Fesser et al. \cite{fesser2024augmentations}.
+    \item \textbf{Heuristic-Labeled Bounds:} The macroscopic spectral gap limits and bipartite Cheeger inequalities (Section 4) rely on heuristically-derived approximations linking discrete boundary traces to spectral domains, rather than strict continuous combinatorial proofs.
+    \item \textbf{Tuned Design Choice ($\gamma=3$):} The structural multiplier is a chosen asymptotic design constraint required to scale the metric smoothly within Erdős–Rényi density limits, not a strict topological necessity.
+    \item \textbf{Inverse-Metric Workaround:} Because the unweighted degree penalty scales dominantly in scale-free networks, $F^*$ is strongly negatively correlated with dense edge formation, requiring the inverse mapping $-F^*$ for link prediction evaluations.
+    \item \textbf{Hardware-Locality Dependence:} The massive operational speedup ($\mathcal{O}(|E|d_{max})$ SpSpMM scaling) is heavily dependent on deterministic L3 CPU cache mitigation via sequential CSR row extraction, rather than purely structural asymptotic advantages.
+    \item \textbf{Baseline-Heuristic Comparison:} While our empirical evaluation (Table 7.2) benchmarks $F^*$ favorably against continuous deep representation models (LightGCN), deep models inherently optimize latent parameter spaces. The true structural peers of $F^*$ are cheap topological heuristics (e.g., Common Neighbors, Adamic-Adar).
+\end{enumerate}
 
 \section{Conclusion}
 This paper successfully resolves the bipartite metric collapse of Forman-Ricci Curvature by replacing the absent 3-cycle constraints with structurally bounded 4-cycle paths. The geometric formulation mathematically bounds perturbations within $\mathcal{O}(1/d_{max})$, heuristically bounds the bipartite Cheeger inequality, and explicitly defines SpSpMM extraction at $\mathcal{O}(|E| d_{max})$ efficiency. By demonstrating definitive $\mathcal{O}(|E|d_{max})$ performance advantages and predictive performance that matches or exceeds parameter-heavy LightGCN embeddings on massive real-world recommendation networks, $F^*$ provides a vital discrete geometric tool for modern Topological Data Analysis across bipartite and signed systems.
