@@ -17,7 +17,7 @@
 \maketitle
 
 \begin{abstract}
-This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a relative bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize bounds against the discrete Laplacian via spectral gap derivations and proving the Bipartite Cheeger Inequality \cite{chung1997spectral}. We demonstrate that the Sampled Sparse-Sparse Matrix Multiplication (SpSpMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) \cite{he2020lightgcn} while remaining computationally deterministic.
+This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a relative bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize bounds against the discrete Laplacian via spectral gap derivations and establishing heuristic bounds on the Bipartite Cheeger Inequality \cite{chung1997spectral}. We demonstrate that the Sampled Sparse-Sparse Matrix Multiplication (SpSpMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) \cite{he2020lightgcn} while remaining computationally deterministic.
 \end{abstract}
 
 \begin{keywords}
@@ -113,7 +113,7 @@ The continuous diffusion process of a graph is governed by its discrete conducta
 \label{eq:standard_cheeger}
 \frac{\lambda_2}{2} \le h_G \le \sqrt{2 \lambda_2}
 \end{equation}
-From Theorem \ref{thm:spectralgap}, we established the strict lower bound for $\lambda_2$. Substituting the algebraic curvature limit directly into the continuous left-hand side of \cref{eq:standard_cheeger} yields:
+From Proposition \ref{thm:spectralgap}, we established the heuristic lower bound for $\lambda_2$. Substituting the algebraic curvature limit directly into the continuous left-hand side of \cref{eq:standard_cheeger} yields:
 \begin{equation}
 h_G \ge \frac{\lambda_2}{2} \ge \frac{1}{2} \left[ \frac{F_{min}^*}{d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right) \right]
 \end{equation}
@@ -266,7 +266,7 @@ Maximizing the global minimum curvature $F_{min}^*$ via 4-cycle trace density st
 \end{theorem}
 
 \begin{proof}
-The structural entropy $H(\mathcal{L})$ quantifies the macroscopic topological uncertainty, scaling monotonically with the graph's randomness (e.g., Erdős–Rényi configurations). As derived in Theorem 4.1, the bipartite spectral gap $\lambda_2$ is strictly bounded from below by the discrete curvature: $\lambda_2 \ge \frac{F_{min}^*}{d_{max}}$. 
+The structural entropy $H(\mathcal{L})$ quantifies the macroscopic topological uncertainty, scaling monotonically with the graph's randomness (e.g., Erdős–Rényi configurations). As derived in Proposition \ref{thm:spectralgap}, the bipartite spectral gap $\lambda_2$ is heuristically bounded from below by the discrete curvature: $\lambda_2 \ge \frac{F_{min}^*}{d_{max}}$. 
 
 In a perfectly regular bipartite lattice, the curvature $F_{min}^*$ approaches its theoretical maximum, forcing the Fiedler value $\lambda_2$ to widen the spectral gap. By algebraic substitution into the entropy function, a maximized spectral gap forces the distribution of eigenvalues away from a uniform state and toward a highly localized, spiked spectrum. The trace of $\mathcal{L}$ remains constant at $N$, meaning that displacing mass to higher eigenvalues strictly minimizes $- \sum \lambda_i \ln(\lambda_i)$. Consequently, regions of high $F^*$ mathematically represent low-entropy states of extreme structural order, formally mapping the discrete geometric invariant to global thermodynamic stability.
 \end{proof}
