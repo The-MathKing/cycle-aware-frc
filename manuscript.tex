@@ -1,4 +1,4 @@
-\documentclass{siamart251216}
+\documentclass{siuro250211}
 \usepackage{amsmath, amssymb, amsfonts}
 \usepackage{graphicx}
 \usepackage{cleveref}
@@ -18,7 +18,7 @@
 \maketitle
 
 \begin{abstract}
-This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a relative bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize the spectral gap limits against the discrete Laplacian and establish heuristic bounds on the Bipartite Cheeger Inequality \cite{chung1997spectral}. We demonstrate that the Sampled Sparse-Sparse Matrix Multiplication (SpSpMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) \cite{he2020lightgcn} while remaining computationally deterministic.
+This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a relative bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize the spectral gap limits against the discrete Laplacian and establish heuristic bounds on the Bipartite Cheeger Inequality [F. R. Chung, Spectral Graph Theory, American Mathematical Society, 1997]. We demonstrate that the Sampled Sparse-Sparse Matrix Multiplication (SpSpMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) [X. He et al., in Proc. 43rd Int. ACM SIGIR Conf., 2020, pp. 639--648] while remaining computationally deterministic.
 \end{abstract}
 
 \begin{keywords}
@@ -53,7 +53,7 @@ F^*(e) = 4 - d(u) - d(v) + \gamma \min(d(u)-1, d(v)-1) \left[ \frac{\Sigma_{C_4}
 \noindent \textbf{Asymptotic Design of $\gamma = 3$:} In standard Forman-Ricci curvature over unweighted simplicial 2-complexes, an edge bounded by triangles explicitly receives a scalar weight of $+3$ per bounding triangle, setting the upper combinatorial bound of the curvature mass to $3 \min(d(u)-1, d(v)-1)$. We select $\gamma=3$ as a design parameter motivated by asymptotic scaling rather than an absolute topological necessity. By normalizing the $C_4$ summation to mimic the fractional density of valid topological bounds, selecting $\gamma=3$ geometrically aligns the asymptotic linear bound of the 4-cycle codomain (see Theorem 6.1) exactly with the standard 3-cycle baseline limits without introducing arbitrary constants, ensuring analogous metric scaling between uni- and bipartite topologies.
 
 \vspace{0.5em}
-\noindent \textbf{Strict Bipartite Constraint:} Equation \ref{eq:fstar} and the supporting matrix extractions strictly demand the underlying topology be a bipartite graph ($\Delta = 0$). Applying this formulation to arbitrary unipartite graphs containing odd cycles (triangles) will result in critical algebraic failure, as the matrix powers will incorrectly absorb 3-cycles into the 4-cycle trace.
+\noindent \textbf{Strict Bipartite Constraint:} \Cref{eq:fstar} and the supporting matrix extractions strictly demand the underlying topology be a bipartite graph ($\Delta = 0$). Applying this formulation to arbitrary unipartite graphs containing odd cycles (triangles) will result in critical algebraic failure, as the matrix powers will incorrectly absorb 3-cycles into the 4-cycle trace.
 
 \end{definition}
 
@@ -118,7 +118,7 @@ The continuous diffusion process of a graph is governed by its discrete conducta
 \label{eq:standard_cheeger}
 \frac{\lambda_2}{2} \le h_G \le \sqrt{2 \lambda_2}
 \end{equation}
-From Proposition \ref{thm:spectralgap}, we established the heuristic lower bound for $\lambda_2$. Substituting the algebraic curvature limit directly into the continuous left-hand side of \cref{eq:standard_cheeger} yields:
+From \cref{thm:spectralgap}, we established the heuristic lower bound for $\lambda_2$. Substituting the algebraic curvature limit directly into the continuous left-hand side of \cref{eq:standard_cheeger} yields:
 \begin{equation}
 h_G \ge \frac{\lambda_2}{2} \ge \frac{1}{2} \left[ \frac{F_{min}^*}{d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right) \right]
 \end{equation}
@@ -148,7 +148,7 @@ Therefore, minimizing the integral $W_1$ transport cost is structurally isomorph
 
 \section{Algorithmic Formalization \& Complexity Bounds}
 
-To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matrix cubing ($A^3$) through a Masked Sparse-Sparse Matrix Multiplication (SpSpMM) approach, historically inspired by SDDMM hardware kernels but correctly scoped for purely sparse inner products. We formulate the extraction in Algorithm \ref{alg:spspmm}.
+To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matrix cubing ($A^3$) through a Masked Sparse-Sparse Matrix Multiplication (SpSpMM) approach, historically inspired by SDDMM hardware kernels but correctly scoped for purely sparse inner products. We formulate the extraction in \cref{alg:spspmm}.
 
 \begin{algorithm2e}[htbp]
 \caption{Sparse $C_4$ Bipartite Edge Extraction via SpSpMM}
@@ -172,7 +172,7 @@ $F^* \gets \text{empty\_array}(|E|)$\;
 
 \begin{theorem}[Computational Complexity Limits]
 \label{thm:complexity}
-The time complexity of Algorithm \ref{alg:spspmm} is bounded by $\mathcal{O}(|E| d_{max})$, and the space complexity is strictly $\mathcal{O}(|E| + |V|)$.
+The time complexity of \cref{alg:spspmm} is bounded by $\mathcal{O}(|E| d_{max})$, and the space complexity is strictly $\mathcal{O}(|E| + |V|)$.
 \end{theorem}
 
 \begin{proof}
@@ -271,7 +271,7 @@ Maximizing the global minimum curvature $F_{min}^*$ via 4-cycle trace density st
 \end{theorem}
 
 \begin{proof}
-The structural entropy $H(\mathcal{L})$ quantifies the macroscopic topological uncertainty, scaling monotonically with the graph's randomness (e.g., Erdős–Rényi configurations). As derived in Proposition \ref{thm:spectralgap}, the bipartite spectral gap $\lambda_2$ is heuristically bounded from below by the discrete curvature: $\lambda_2 \ge \frac{F_{min}^*}{d_{max}}$. 
+The structural entropy $H(\mathcal{L})$ quantifies the macroscopic topological uncertainty, scaling monotonically with the graph's randomness (e.g., Erdős–Rényi configurations). As derived in \cref{thm:spectralgap}, the bipartite spectral gap $\lambda_2$ is heuristically bounded from below by the discrete curvature: $\lambda_2 \ge \frac{F_{min}^*}{d_{max}}$. 
 
 In a perfectly regular bipartite lattice, the curvature $F_{min}^*$ approaches its theoretical maximum, forcing the Fiedler value $\lambda_2$ to widen the spectral gap. By algebraic substitution into the entropy function, a maximized spectral gap forces the distribution of eigenvalues away from a uniform state and toward a highly localized, spiked spectrum. The trace of $\mathcal{L}$ remains constant at $N$, meaning that displacing mass to higher eigenvalues strictly minimizes $- \sum \lambda_i \ln(\lambda_i)$. Consequently, regions of high $F^*$ mathematically represent low-entropy states of extreme structural order, formally mapping the discrete geometric invariant to global thermodynamic stability.
 \end{proof}
@@ -298,7 +298,7 @@ Southern Women* & 0.840 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} & 0.885 $\pm$ 0
 {\footnotesize *Note: The Southern Women dataset is a fixed real-world topology; the $\pm$ 0.000 variance indicates deterministic execution rather than stochastic generation.}
 \end{table}
 
-As shown in Table \ref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails catastrophically under high stochastic noise (Noise=0.6), where the unweighted Adjusted Rand Index (ARI) plunges to 0.231 and the Normalized Mutual Information (NMI) drops to 0.280. The collapse in NMI indicates that the stochastic perturbations generate dense, uninformative cross-partition bridges. These noisy edges erode the spectral eigenvalue separation of the standard graph Laplacian, causing the standard unweighted eigenvectors to degenerate into a uniform distribution rather than distinct community cluster centers.
+As shown in \cref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails catastrophically under high stochastic noise (Noise=0.6), where the unweighted Adjusted Rand Index (ARI) plunges to 0.231 and the Normalized Mutual Information (NMI) drops to 0.280. The collapse in NMI indicates that the stochastic perturbations generate dense, uninformative cross-partition bridges. These noisy edges erode the spectral eigenvalue separation of the standard graph Laplacian, causing the standard unweighted eigenvectors to degenerate into a uniform distribution rather than distinct community cluster centers.
 
 Conversely, substituting the standard adjacency matrix with the geometrically $F^*$-weighted matrix $W_{u,v} = \max(0, F^*(u,v))$ exclusively preserves edges with structurally positive 4-cycle neighborhoods. This cycle-aware filtering effectively eliminates the stochastic inter-community noise while amplifying intra-community invariants. The geometrically-weighted spectral matrix restores sharp spectral eigenvalue separation, allowing the leading eigenvectors to accurately partition the latent blocks. As a result, the $F^*$-weighted spectral clustering sustains an ARI of 0.785 and an NMI of 0.812 even under extreme structural entropy, demonstrating that the curvature formulation mathematically isolates genuine bipartite communities.
 
