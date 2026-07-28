@@ -4,8 +4,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import urllib.request
 import gzip
+import zipfile
 import time
 import os
+import tracemalloc
 
 def compute_signed_frc(A: sp.csr_matrix, gamma=3.0) -> np.ndarray:
     """
@@ -139,42 +141,64 @@ def generate_synthetic_test():
     plt.savefig('graph_viz.pdf', bbox_inches='tight')
     print("Figure saved to graph_viz.pdf")
 
-def benchmark_epinions():
+def benchmark_movielens():
     """
-    Downloads and evaluates the SNAP soc-sign-epinions dataset.
-    131k nodes, 841k signed edges. Treats as undirected for structural geometry check.
+    Downloads and evaluates the MovieLens-1M dataset.
+    A genuine bipartite graph. Binarizes ratings: >=4 is +1, <=3 is -1.
     """
-    url = "https://snap.stanford.edu/data/soc-sign-epinions.txt.gz"
-    filepath = "soc-sign-epinions.txt.gz"
+    url = "https://files.grouplens.org/datasets/movielens/ml-1m.zip"
+    zip_path = "ml-1m.zip"
     
-    if not os.path.exists(filepath):
+    if not os.path.exists(zip_path):
         print(f"Downloading dataset from {url}...")
-        urllib.request.urlretrieve(url, filepath)
+        urllib.request.urlretrieve(url, zip_path)
     
-    print("Parsing dataset...")
+    print("Parsing MovieLens 1M dataset...")
     rows, cols, data = [], [], []
-    with gzip.open(filepath, 'rt') as f:
-        for line in f:
-            if line.startswith('#'): continue
-            parts = line.strip().split()
-            if len(parts) >= 3:
-                u, v, w = int(parts[0]), int(parts[1]), int(parts[2])
-                # Make symmetric for undirected structural metric
-                rows.extend([u, v])
-                cols.extend([v, u])
-                data.extend([w, w])
-                
+    
+    # Offset movies by max_user_id to create a bipartite adjacency matrix
+    MAX_USERS = 6040 + 10 # ML-1M has 6040 users
+    
+    with zipfile.ZipFile(zip_path, 'r') as z:
+        with z.open('ml-1m/ratings.dat') as f:
+            for line in f:
+                # Format: UserID::MovieID::Rating::Timestamp
+                parts = line.decode('utf-8').strip().split('::')
+                if len(parts) >= 3:
+                    u = int(parts[0])
+                    v = int(parts[1]) + MAX_USERS # Shift movie index to make it bipartite
+                    rating = int(parts[2])
+                    
+                    # Binarize rating
+                    w = 1 if rating >= 4 else -1
+                    
+                    rows.extend([u, v])
+                    cols.extend([v, u])
+                    data.extend([w, w])
+                    
     n = max(max(rows), max(cols)) + 1
     A = sp.csr_matrix((data, (rows, cols)), shape=(n, n))
     
-    print(f"Evaluating F* on network with {n} nodes and {len(data)//2} undirected edges...")
+    print(f"Evaluating F* on network with {n} nodes and {len(data)//2} undirected bipartite edges...")
+    
+    tracemalloc.start()
     start_time = time.time()
+    
     F_star, _, _, _ = compute_signed_frc(A)
+    
     elapsed = time.time() - start_time
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
     
+    peak_mb = peak / 10**6
     print(f"Benchmark completed in {elapsed:.3f} seconds.")
-    print(f"F* distribution stats: Min={np.min(F_star):.2f}, Max={np.max(F_star):.2f}, Mean={np.mean(F_star):.2f}")
+    print(f"Peak Memory Usage: {peak_mb:.2f} MB")
+    print(f"F* distribution stats: Min={np.min(F_star):.2f}, Max={np.max(F_star):.2f}, Mean={np.mean(F_star):.2f}, Var={np.var(F_star):.2f}")
     
+    with open("benchmark_results.txt", "w") as f:
+        f.write(f"Time: {elapsed:.3f}s\nPeak RAM: {peak_mb:.2f} MB\n")
+        f.write(f"Min: {np.min(F_star):.2f}\nMax: {np.max(F_star):.2f}\nMean: {np.mean(F_star):.2f}\nVar: {np.var(F_star):.2f}\n")
+
 if __name__ == "__main__":
     generate_synthetic_test()
-    benchmark_epinions()
+    benchmark_movielens()
