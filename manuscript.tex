@@ -181,7 +181,7 @@ The time complexity of Algorithm \ref{alg:spspmm} is bounded by $\mathcal{O}(|E|
 \end{proof}
 
 \subsection{Hardware-Level SpSpMM Formalization and Memory Access}
-Evaluating $F^*$ via the Masked Sparse-Sparse Matrix Multiplication (SpSpMM) bypasses the catastrophic memory overhead of naive sparse matrix cubing. The operator computes $(A \cdot B) \circ S$, where $\circ$ is the Hadamard product and $S$ dictates the sparsity pattern across CSR vectors.
+Evaluating $F^*$ via Masked Sparse-Sparse Matrix Multiplication (SpSpMM) avoids the catastrophic memory overhead of naive sparse matrix cubing. The operator computes $(A \cdot B) \circ S$, where $\circ$ is the Hadamard product and $S$ dictates the CSR sparsity pattern.
 
 In our cycle extraction, $S \equiv A$, constraining the computation strictly to existing edges. Furthermore, by structuring the adjacency matrix $A$ in Compressed Sparse Row (CSR) format, the intermediate product $A^2$ (representing length-2 paths) is highly block-diagonalized. 
 
@@ -354,7 +354,7 @@ To establish absolute hardware scaling limits, the optimized SpSpMM algorithm wa
 Because the unweighted degree penalty $-(d(u) + d(v))$ scales dominantly in scale-free networks, $F^*(e)$ is strongly negatively correlated with dense edge formation. We evaluate the inverse metric $-F^*(e)$ exclusively against modern state-of-the-art Deep Representation Learning \cite{hamilton2017inductive}:
 \begin{itemize}
     \item \textbf{Heuristic Baselines:} Standard topological overlap metrics including Common Neighbors (CN), Adamic-Adar (AA), and Resource Allocation (RA) projected onto the unipartite node sets.
-    \item \textbf{LightGCN (Graph Neural Network):} A state-of-the-art bipartite message-passing architecture \cite{he2020lightgcn}. We trained a 64-dimensional PyTorch Geometric implementation using BPR loss across the identically masked train/test splits. 
+    \item \textbf{LightGCN (Graph Neural Network):} A state-of-the-art bipartite message-passing architecture \cite{he2020lightgcn}. We trained a 64-dim PyTorch Geometric model using BPR loss across the identically masked train/test splits. 
 \end{itemize}
 
 \subsubsection{Experimental Methodology and Sampling}
