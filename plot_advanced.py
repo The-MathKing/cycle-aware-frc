@@ -54,7 +54,7 @@ def plot_loglog_complexity(save_path="complexity_loglog.png"):
     
     plt.figure(figsize=(8, 6))
     plt.loglog(edges, time_gcn, marker='s', linestyle='--', color='#d73027', linewidth=2, markersize=8, label='LightGCN (50 Epochs)')
-    plt.loglog(edges, time_sddmm, marker='o', linestyle='-', color='#4575b4', linewidth=2, markersize=8, label='Cycle-Aware $F^*$ (SDDMM)')
+    plt.loglog(edges, time_sddmm, marker='o', linestyle='-', color='#4575b4', linewidth=2, markersize=8, label='Cycle-Aware $F^*$ (SpSpMM)')
     
     plt.xlabel(r'Edge Count ($|E|$)')
     plt.ylabel('Execution Time (seconds)')

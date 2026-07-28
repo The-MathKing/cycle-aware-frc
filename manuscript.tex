@@ -69,15 +69,15 @@ The matrix entry $(A^3)_{uv}$ enumerates the sum of edge weight products for all
 
 Standard Forman-Ricci Curvature acts as a lower bound for the discrete Laplacian via the Bochner-Weitzenb{\"o}ck formula. In bipartite graphs, this structural linkage must be re-derived against the spectral gap. Let $\mathcal{L} = D^{-1/2}(D - A)D^{-1/2}$ be the normalized Laplacian of a bipartite graph $G$, with eigenvalues $0 = \lambda_1 \le \lambda_2 \le \dots \le \lambda_n \le 2$.
 
-\begin{theorem}[Bipartite Spectral Gap Lower Bound]
+\begin{proposition}[Heuristic Bipartite Spectral Gap Lower Bound]
 \label{thm:spectralgap}
-For any connected bipartite graph $G$, let $F_{min}^* = \min_{e \in E} F^*(e)$ denote the global minimum cycle-aware curvature. The spectral gap $\lambda_2$ of the normalized Laplacian $\mathcal{L}$ is strictly bounded from below by a function of the minimum curvature and maximum bipartite degree bounding:
+The 4-cycle normalized curvature $F_{min}^*$ over a bipartite graph $G = (U, V, E)$ bounds the first non-trivial eigenvalue of the normalized discrete Laplacian $\mathcal{L}$, denoted $\lambda_2$, as:
 \begin{equation}
 \lambda_2 \ge \frac{F_{min}^*}{d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right)
 \end{equation}
-\end{theorem}
+\end{proposition}
 
-\begin{proof}
+\begin{proof}[Heuristic Derivation]
 Let $x \in \mathbb{R}^{|V|}$ be the harmonic eigenvector corresponding to $\lambda_2$, orthogonal to the degree-weighted all-ones vector, such that $x \perp D\mathbf{1}$. The spectral gap is characterized by the discrete Rayleigh quotient:
 \begin{equation}
 \lambda_2 = \inf_{x \perp D\mathbf{1}} \frac{x^T \mathcal{L} x}{x^T x} = \inf_{x \perp D\mathbf{1}} \frac{\sum_{(u,v) \in E} (x_u - x_v)^2}{\sum_{v \in V} x_v^2 d(v)}
@@ -99,15 +99,15 @@ Substituting this geometric trace approximation into the initial bounds yields t
 As $F_{min}^*$ normalizes the 4-cycle boundary operator algebraically, it successfully lifts the spectral lower bound from a trivial negative floor to an active spectral constraint, scaling proportionately with the geometric trace expansion.
 \end{proof}
 
-\begin{theorem}[Bipartite Cheeger Inequality]
+\begin{proposition}[Heuristic Bipartite Cheeger Inequality]
 \label{thm:cheeger}
 Let $h_G = \min_{S \subset V} \frac{|E(S, V \setminus S)|}{\min(\text{vol}(S), \text{vol}(V \setminus S))}$ denote the Cheeger constant (conductance) of a bipartite graph $G$. The 4-cycle normalized curvature bounds the bottleneckness of the network as:
 \begin{equation}
 \frac{F_{min}^*}{2 d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right) \le h_G \le \sqrt{\frac{4 d_{max} - 2F_{min}^* + \frac{2 F_{min}^* \text{tr}(A^4)}{|E| d_{max}^2}}{d_{max}}}
 \end{equation}
-\end{theorem}
+\end{proposition}
 
-\begin{proof}
+\begin{proof}[Heuristic Derivation]
 The continuous diffusion process of a graph is governed by its discrete conductance. Standard Cheeger inequalities mathematically link $h_G$ to the spectral gap $\lambda_2$ via the continuous limits:
 \begin{equation}
 \label{eq:standard_cheeger}
@@ -143,7 +143,7 @@ Therefore, minimizing the integral $W_1$ transport cost is structurally isomorph
 
 \section{Algorithmic Formalization \& Complexity Bounds}
 
-To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matrix cubing ($A^3$) through a Masked Sparse-Sparse Matrix Multiplication (SpSpMM) approach, historically inspired by SDDMM hardware kernels but correctly scoped for purely sparse inner products. We formulate the extraction in Algorithm \ref{alg:sddmm}.
+To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matrix cubing ($A^3$) through a Masked Sparse-Sparse Matrix Multiplication (SpSpMM) approach, historically inspired by SDDMM hardware kernels but correctly scoped for purely sparse inner products. We formulate the extraction in Algorithm \ref{alg:spspmm}.
 
 \begin{algorithm2e}[htbp]
 \caption{Sparse $C_4$ Bipartite Edge Extraction via SpSpMM}
@@ -280,13 +280,15 @@ To demonstrate the empirical utility of $F^*$ beyond link prediction, we applied
 \centering
 \caption{Community Detection Performance (Adjusted Rand Index and NMI)}
 \label{tab:clustering}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lcc|cc@{}}
 \toprule
 \textbf{Dataset} & \textbf{Unweighted ARI} & \textbf{$F^*$-Weighted ARI} & \textbf{Unweighted NMI} & \textbf{$F^*$-Weighted NMI} \\ \midrule
 Bipartite SBM (Noise=0.3) & 0.612 $\pm$ 0.005 & \textbf{0.924 $\pm$ 0.003} & 0.655 $\pm$ 0.006 & \textbf{0.941 $\pm$ 0.002} \\
 Bipartite SBM (Noise=0.6) & 0.231 $\pm$ 0.012 & \textbf{0.785 $\pm$ 0.008} & 0.280 $\pm$ 0.015 & \textbf{0.812 $\pm$ 0.010} \\
 Southern Women* & 0.840 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} & 0.885 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} \\ \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \vspace{1ex} \\
 {\footnotesize *Note: The Southern Women dataset is a fixed real-world topology; the $\pm$ 0.000 variance indicates deterministic execution rather than stochastic generation.}
 \end{table}
