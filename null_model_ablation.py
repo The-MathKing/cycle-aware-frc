@@ -72,7 +72,9 @@ def compute_fstar_scores(train_rows, train_cols, train_data, test_pos, test_neg,
     d = np.array(np.abs(A_train).sum(axis=1)).flatten()
     
     def score_fstar(u, v):
-        A3_uv = A_train[u, :].dot(A_sq[:, v])[0, 0]
+        # A_sq is symmetric, so A_sq[:, v] == A_sq[v, :].T
+        # Row extraction on CSR is O(1), column extraction is O(N)
+        A3_uv = A_train[u, :].dot(A_sq[v, :].T)[0, 0]
         du, dv = d[u], d[v]
         if du == 0 or dv == 0:
             return 0

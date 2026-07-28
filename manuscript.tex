@@ -17,7 +17,7 @@
 \maketitle
 
 \begin{abstract}
-This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a strictly bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize bounds against the discrete Laplacian via spectral gap derivations and proving the Bipartite Cheeger Inequality. We demonstrate that the Sampled Dense-Dense Matrix Multiplication (SDDMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) while remaining computationally deterministic.
+This document outlines the mathematical framework and empirical validation for the Cycle-Aware Forman-Ricci Curvature applied to signed and bipartite networks. We resolve the metric collapse of standard Forman-Ricci Curvature in networks lacking three-cliques by incorporating higher-order four-cycles, structural balance weighting, and a strictly bounded degree normalization. We explicitly state that this formulation is designed exclusively for dense mesoscopic clusters; in sparse or strictly hierarchical geometries, the formulation mathematically collapses into a linear degree penalty $4 - d(u) - d(v)$, rendering it ineffective for resolving complex connectivity in tree-like structures. This paper extends the formulation to formalize bounds against the discrete Laplacian via spectral gap derivations and proving the Bipartite Cheeger Inequality \cite{chung1997spectral}. We demonstrate that the Sampled Dense-Dense Matrix Multiplication (SDDMM) algorithm scales in $\mathcal{O}(|E|d_{max})$ time. When validated against the MovieLens-1M and Amazon Product Reviews bipartite datasets, the cycle-aware heuristic rivals the predictive accuracy of parameter-heavy deep learning embeddings (LightGCN) \cite{he2020lightgcn} while remaining computationally deterministic.
 \end{abstract}
 
 \begin{keywords}
@@ -29,10 +29,10 @@ Cycle-Aware Curvature, Forman-Ricci Curvature, Signed Networks, Bipartite Graphs
 \end{AMS}
 
 \section{Introduction}
-Forman-Ricci Curvature (FRC) \cite{forman2003bochner} is a discrete geometric invariant that evaluates the structural cohesiveness of networks by measuring the extent to which edges are embedded within higher-order cliques, primarily triangles \cite{sreejith2016forman}. In standard unweighted graphs, the FRC of an edge $e=(u,v)$ is bounded by the node degrees and the number of bounding triangles $|T(e)|$. However, when applied to bipartite graphs, the standard FRC formulation undergoes a metric collapse. Because bipartite topologies inherently forbid triangles (3-cycles), the clique term vanishes, reducing the curvature to a strictly negative, degree-driven penalty: $F(e) = 4 - d(u) - d(v)$. Consequently, standard FRC fails to detect cohesive mesoscopic structures within bipartite networks. To resolve this, we introduce a Cycle-Aware formulation that leverages 4-cycles ($C_4$). We note that shifting from 3-cycles to 4-cycles in bipartite networks is a highly intuitive, incremental progression in network science. However, this adjustment is essential for producing a non-trivial curvature invariant exclusively in dense topologies, as sparsity limits its effectiveness.
+Forman-Ricci Curvature (FRC) \cite{forman2003bochner} is a discrete geometric invariant that evaluates the structural cohesiveness of networks by measuring the extent to which edges are embedded within higher-order cliques, primarily triangles \cite{sreejith2016forman}. In standard unweighted graphs, the FRC of an edge $e=(u,v)$ is bounded by the node degrees and the number of bounding triangles $|T(e)|$. However, when applied to bipartite graphs, the standard FRC formulation undergoes a metric collapse. Because bipartite topologies inherently forbid triangles (3-cycles), the clique term vanishes, reducing the curvature to a strictly negative, degree-driven penalty: $F(e) = 4 - d(u) - d(v)$. Consequently, standard FRC fails to detect cohesive mesoscopic structures within bipartite networks. To resolve this, we introduce a Cycle-Aware formulation that leverages 4-cycles ($C_4$) \cite{opsahl2013triadic, latapy2008basic}. We note that shifting from 3-cycles to 4-cycles in bipartite networks is a highly intuitive, incremental progression in network science. However, this adjustment is essential for producing a non-trivial curvature invariant exclusively in dense topologies, as sparsity limits its effectiveness.
 
 \section{Related Work}
-Classical Topological Data Analysis (TDA) frequently struggles with bipartite networks due to the intrinsic absence of 2-simplices (triangles) required for higher-order persistent homology filtration. Within discrete curvature domains, Ollivier-Ricci curvature \cite{ollivier2009ricci} utilizes probabilistic optimal transport (Wasserstein distances) to circumvent this topological deficit, successfully characterizing bipartite graphs without relying on simplicial complexes \cite{ni2015ricci}. However, Ollivier-Ricci requires solving a linear programming problem for every edge, resulting in $\mathcal{O}(|E| d_{max}^3)$ scaling, prohibiting evaluation on massive scale-free datasets. 
+Classical Topological Data Analysis (TDA) frequently struggles with bipartite networks due to the intrinsic absence of 2-simplices (triangles) required for higher-order persistent homology filtration. Within discrete curvature domains, Ollivier-Ricci curvature \cite{ollivier2009ricci} utilizes probabilistic optimal transport (Wasserstein distances) to circumvent this topological deficit, successfully characterizing bipartite graphs without relying on simplicial complexes \cite{ni2015ricci, samal2018comparative}. However, Ollivier-Ricci requires solving a linear programming problem for every edge, resulting in $\mathcal{O}(|E| d_{max}^3)$ scaling, prohibiting evaluation on massive scale-free datasets. 
 
 Recent advancements in representation learning utilize Bipartite Graph Neural Networks (GNNs), such as GraphSAGE and LightGCN, to embed bipartite structures. While highly expressive, GNNs require extensive training parameterization, are prone to over-smoothing on scale-free fringe topologies, and lack fundamental mathematical transparency. Conversely, standard Forman-Ricci curvature is highly combinatorial, interpretable, and computationally trivial, yet suffers the aforementioned bipartite metric collapse. Algorithmic workarounds involve bipartite-to-hypergraph lifting, which forces the bipartite structure into a unipartite complex. While mathematically sound, hypergraph lifting destroys explicit pairwise relationships and severely inflates incidence matrices. The proposed Cycle-Aware formulation bypasses these issues by directly bounding the Forman-Ricci combinatorial limits to native 4-cycles, providing a zero-parameter deterministic heuristic that competes aggressively against latent continuous embeddings.
 
@@ -230,20 +230,20 @@ By evaluating $F^*$ across the massive MovieLens graph, we can isolate macro-str
 
 \begin{figure}[htbp]
     \centering
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{core_topology.pdf}
-        \caption{Bipartite Core (Highest Density, Lowest F*). Note the tightly bound, complete substructure.}
-    \end{minipage}\hfill
-    \begin{minipage}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{fringe_topology.pdf}
-        \caption{Bipartite Fringe (Tree-like, Highest F*). Sparse bottlenecks acting as connectivity bridges.}
-    \end{minipage}
+    \includegraphics[width=\textwidth]{bipartite_spy.png}
+    \caption{Topological Adjacency Spy Plot. This visualizes the sparse bipartite adjacency matrix colored by a continuous $F^*$ curvature weight array, demonstrating the localization of dense cores and sparse fringes within the matrix space.}
+    \label{fig:spy}
 \end{figure}
 
 \subsection{Ablation Study: Degree Bias Elimination}
 To rigorously prove that the predictive validity of the metric stems from the sophisticated 4-cycle geometry rather than a basic unweighted degree penalty (degree bias), we ran an ablation study using a strict Bipartite Configuration Model for ML-1M. This null graph perfectly preserves the exact degree distribution of every node while randomizing the edges via Markov Chain edge-swapping, completely destroying the original 4-cycle mesoscopic structure.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{kde_ablation.png}
+    \caption{Dual-Distribution KDE Plot (Degree Bias Ablation). The null model collapses to a narrow distribution, while the genuine network exhibits a wide geometric spread.}
+    \label{fig:kde_ablation}
+\end{figure}
 
 On the true ML-1M topology, $F^*$ achieved a strong AUC-ROC. Conversely, on the randomized null graph (where $F^*$ effectively acts only as the baseline $4-d(u)-d(v)$ penalty since 4-cycles are topologically scarce), the predictive performance plummeted to random chance ($\approx 0.50$). This ablation unequivocally confirms that the metric's empirical power originates structurally from mesoscopic 4-cycles, not trivial degree sequences.
 
@@ -254,12 +254,19 @@ To establish absolute hardware scaling limits, the optimized SDDMM algorithm was
     \item \textbf{Amazon Product Reviews (Video Games 5-Core):} A sparser, highly skewed bipartite e-commerce graph spanning hundreds of thousands of transactions.
 \end{enumerate}
 
-Because the unweighted degree penalty $-(d(u) + d(v))$ scales dominantly in scale-free networks, $F^*(e)$ is strongly negatively correlated with dense edge formation. We evaluate the inverse metric $-F^*(e)$ exclusively against modern state-of-the-art Deep Representation Learning:
+Because the unweighted degree penalty $-(d(u) + d(v))$ scales dominantly in scale-free networks, $F^*(e)$ is strongly negatively correlated with dense edge formation. We evaluate the inverse metric $-F^*(e)$ exclusively against modern state-of-the-art Deep Representation Learning \cite{hamilton2017inductive}:
 \begin{enumerate}
     \item \textbf{LightGCN (Graph Neural Network):} A state-of-the-art bipartite message-passing architecture \cite{he2020lightgcn}. We trained a 64-dimensional PyTorch Geometric implementation utilizing Bayesian Personalized Ranking (BPR) loss across the identically masked test/train splits. 
 \end{enumerate}
 
 \subsubsection{Results and Computational Complexity}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{complexity_loglog.png}
+    \caption{Log-Log Computational Complexity benchmark. The deterministic $\mathcal{O}(|E|d_{max})$ SDDMM extraction significantly bypasses the exponential gradient descent limits of PyTorch LightGCN.}
+    \label{fig:complexity}
+\end{figure}
 
 \begin{table}[h]
 \centering
