@@ -109,11 +109,28 @@ def benchmark_link_prediction():
                     
     n = max(max(rows), max(cols)) + 1
     
-    # Mask a small number of positive edges for testing to save time
-    pos_edges = [(rows[i], cols[i]) for i in range(len(data)) if data[i] == 1 and rows[i] < MAX_USERS]
-    np.random.shuffle(pos_edges)
-    test_size = min(1000, len(pos_edges) // 10)
-    test_pos = pos_edges[:test_size]
+    # Identify positive edges (only users pointing to items, and rating == 1)
+    pos_edges_idx = [i for i in range(len(data)) if data[i] == 1 and rows[i] < MAX_USERS]
+    np.random.shuffle(pos_edges_idx)
+    test_size = min(1000, len(pos_edges_idx) // 10)
+    test_idx = pos_edges_idx[:test_size]
+    
+    test_pos = [(rows[i], cols[i]) for i in test_idx]
+    
+    # Remove test edges from training data to prevent leakage
+    train_rows = np.delete(rows, test_idx)
+    train_cols = np.delete(cols, test_idx)
+    train_data = np.delete(data, test_idx)
+    
+    # Also remove the symmetric counterparts to fully prevent leakage
+    sym_test_idx = []
+    for i in range(len(train_rows)):
+        if (train_cols[i], train_rows[i]) in test_pos:
+            sym_test_idx.append(i)
+    
+    train_rows = np.delete(train_rows, sym_test_idx)
+    train_cols = np.delete(train_cols, sym_test_idx)
+    train_data = np.delete(train_data, sym_test_idx)
     
     # Generate negative samples
     test_neg = []
@@ -124,7 +141,7 @@ def benchmark_link_prediction():
         
     print(f"Test Positive: {len(test_pos)}, Test Negative: {len(test_neg)}")
     
-    A = sp.csr_matrix((data, (rows, cols)), shape=(n, n))
+    A = sp.csr_matrix((train_data, (train_rows, train_cols)), shape=(n, n))
     A_sq = A.dot(A)
     d = np.array(np.abs(A).sum(axis=1)).flatten()
     

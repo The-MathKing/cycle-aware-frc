@@ -1,1 +1,1 @@
-Link Prediction AUC: 0.1182
+Link Prediction AUC: 0.1126
