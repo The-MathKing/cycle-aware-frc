@@ -1,21 +1,21 @@
 \contentsline {definition}{{Definition}{3.1}{Cycle-Aware Forman-Ricci Curvature for Signed Bipartite Networks}}{2}{theorem.4}%
 \contentsline {theorem}{{Theorem}{4.1}{Bipartite Spectral Gap Lower Bound}}{3}{theorem.9}%
 \contentsline {proof}{{Proof}{1}{}}{3}{proof.11}%
-\contentsline {theorem}{{Theorem}{4.2}{Bipartite Cheeger Inequality}}{3}{theorem.15}%
-\contentsline {proof}{{Proof}{2}{}}{4}{proof.17}%
-\contentsline {theorem}{{Theorem}{4.3}{Wasserstein Transport Approximation Bounds}}{4}{theorem.21}%
-\contentsline {proof}{{Proof}{3}{}}{4}{proof.22}%
-\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{5}{theorem.28}%
-\contentsline {proof}{{Proof}{4}{}}{5}{proof.29}%
-\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{6}{theorem.31}%
-\contentsline {proof}{{Proof}{5}{}}{6}{proof.32}%
-\contentsline {theorem}{{Theorem}{5.3}{Parallel Time Complexity}}{6}{theorem.34}%
-\contentsline {proof}{{Proof}{6}{}}{6}{proof.35}%
-\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{6}{theorem.38}%
-\contentsline {proof}{{Proof}{7}{}}{7}{proof.40}%
-\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{7}{theorem.43}%
-\contentsline {proof}{{Proof}{8}{}}{7}{proof.44}%
-\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{7}{theorem.46}%
-\contentsline {proof}{{Proof}{9}{}}{7}{proof.47}%
-\contentsline {theorem}{{Theorem}{6.4}{Curvature-Entropy Minimization}}{8}{theorem.51}%
-\contentsline {proof}{{Proof}{10}{}}{8}{proof.52}%
+\contentsline {theorem}{{Theorem}{4.2}{Bipartite Cheeger Inequality}}{4}{theorem.16}%
+\contentsline {proof}{{Proof}{2}{}}{4}{proof.18}%
+\contentsline {theorem}{{Theorem}{4.3}{Wasserstein Transport Approximation Bounds}}{5}{theorem.23}%
+\contentsline {proof}{{Proof}{3}{}}{5}{proof.24}%
+\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{6}{theorem.30}%
+\contentsline {proof}{{Proof}{4}{}}{6}{proof.31}%
+\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{6}{theorem.33}%
+\contentsline {proof}{{Proof}{5}{}}{6}{proof.34}%
+\contentsline {theorem}{{Theorem}{5.3}{Parallel Time Complexity}}{7}{theorem.36}%
+\contentsline {proof}{{Proof}{6}{}}{7}{proof.37}%
+\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{7}{theorem.40}%
+\contentsline {proof}{{Proof}{7}{}}{7}{proof.42}%
+\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{8}{theorem.45}%
+\contentsline {proof}{{Proof}{8}{}}{8}{proof.46}%
+\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{8}{theorem.48}%
+\contentsline {proof}{{Proof}{9}{}}{8}{proof.49}%
+\contentsline {theorem}{{Theorem}{6.4}{Curvature-Entropy Minimization}}{8}{theorem.53}%
+\contentsline {proof}{{Proof}{10}{}}{9}{proof.54}%
