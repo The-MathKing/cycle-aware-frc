@@ -1,3 +1,9 @@
-\contentsline {definition}{{Definition}{2.1}{Cycle-Aware Forman-Ricci Curvature for Signed Bipartite Networks}}{1}{theorem.3}%
-\contentsline {lemma}{{Lemma}{2.2}{Non-Overcounting of 4-Cycles}}{2}{theorem.5}%
-\contentsline {proof}{{Proof}{1}{}}{2}{proof.7}%
+\contentsline {definition}{{Definition}{3.1}{Cycle-Aware Forman-Ricci Curvature for Signed Bipartite Networks}}{2}{theorem.4}%
+\contentsline {lemma}{{Lemma}{3.2}{Non-Overcounting of 4-Cycles}}{2}{theorem.6}%
+\contentsline {proof}{{Proof}{1}{}}{2}{proof.8}%
+\contentsline {theorem}{{Theorem}{4.1}{Asymptotic Scaling in $G(n,n,p)$}}{2}{theorem.11}%
+\contentsline {proof}{{Proof}{2}{}}{3}{proof.13}%
+\contentsline {theorem}{{Theorem}{4.2}{Topological Dimensionality Shift}}{3}{theorem.16}%
+\contentsline {proof}{{Proof}{3}{}}{3}{proof.17}%
+\contentsline {theorem}{{Theorem}{4.3}{Lipschitz Continuity of Edge Perturbation}}{3}{theorem.19}%
+\contentsline {proof}{{Proof}{4}{}}{4}{proof.20}%
