@@ -37,52 +37,54 @@ def compute_signed_frc(A: sp.csr_matrix, gamma=3.0) -> np.ndarray:
     return F_star
 
 def generate_sbm_sweep():
-    print("Running Stochastic Block Model (SBM) Noise Sweep...")
-    # Bipartite SBM: 2 blocks of users (U1, U2), 2 blocks of items (V1, V2)
+    print("Running Stochastic Block Model (SBM) Noise Sweep (Averaged over 30 runs)...")
     n_u, n_v = 100, 100
     n = n_u + n_v
     
     noise_levels = np.linspace(0, 0.5, 10)
-    variances = []
+    avg_variances = []
     
     for noise in noise_levels:
-        data, rows, cols = [], [], []
-        
-        # Block 1
-        for i in range(50):
-            for j in range(50):
-                if np.random.rand() < 0.2: # 20% density
-                    w = 1 if np.random.rand() > noise else -1
-                    u_idx, v_idx = i, j + n_u
-                    rows.extend([u_idx, v_idx])
-                    cols.extend([v_idx, u_idx])
-                    data.extend([w, w])
-                    
-        # Block 2
-        for i in range(50, 100):
-            for j in range(50, 100):
-                if np.random.rand() < 0.2:
-                    w = 1 if np.random.rand() > noise else -1
-                    u_idx, v_idx = i, j + n_u
-                    rows.extend([u_idx, v_idx])
-                    cols.extend([v_idx, u_idx])
-                    data.extend([w, w])
-                    
-        A = sp.csr_matrix((data, (rows, cols)), shape=(n, n))
-        F_star = compute_signed_frc(A)
-        if len(F_star) > 0:
-            variances.append(np.var(F_star))
-        else:
-            variances.append(0)
+        variances = []
+        for _ in range(30):
+            data, rows, cols = [], [], []
+            
+            # Block 1
+            for i in range(50):
+                for j in range(50):
+                    if np.random.rand() < 0.2:
+                        w = 1 if np.random.rand() > noise else -1
+                        u_idx, v_idx = i, j + n_u
+                        rows.extend([u_idx, v_idx])
+                        cols.extend([v_idx, u_idx])
+                        data.extend([w, w])
+                        
+            # Block 2
+            for i in range(50, 100):
+                for j in range(50, 100):
+                    if np.random.rand() < 0.2:
+                        w = 1 if np.random.rand() > noise else -1
+                        u_idx, v_idx = i, j + n_u
+                        rows.extend([u_idx, v_idx])
+                        cols.extend([v_idx, u_idx])
+                        data.extend([w, w])
+                        
+            A = sp.csr_matrix((data, (rows, cols)), shape=(n, n))
+            F_star = compute_signed_frc(A)
+            if len(F_star) > 0:
+                variances.append(np.var(F_star))
+            else:
+                variances.append(0)
+        avg_variances.append(np.mean(variances))
             
     plt.figure(figsize=(6,4))
-    plt.plot(noise_levels, variances, marker='o', color='gray', linestyle='--')
-    plt.title("F* Variance vs. SBM Structural Noise")
+    plt.plot(noise_levels, avg_variances, marker='o', color='gray', linestyle='-')
+    plt.title("F* Variance vs. SBM Structural Noise (Avg 30 Runs)")
     plt.xlabel("Noise Level (Sign Flip Probability)")
-    plt.ylabel("Variance of F*")
+    plt.ylabel("Average Variance of F*")
     plt.grid(True)
     plt.savefig('sbm_variance.pdf', bbox_inches='tight')
-    print("Saved SBM sweep plot to sbm_variance.pdf")
+    print("Saved smoothed SBM sweep plot to sbm_variance.pdf")
     
 def benchmark_link_prediction():
     print("Running Link Prediction on MovieLens 1M...")
@@ -141,19 +143,27 @@ def benchmark_link_prediction():
         
     print(f"Test Positive: {len(test_pos)}, Test Negative: {len(test_neg)}")
     
+    from scipy.sparse.linalg import svds
+    
     A = sp.csr_matrix((train_data, (train_rows, train_cols)), shape=(n, n))
+    
+    print("Computing Truncated SVD Baseline...")
+    A_float = A.asfptype()
+    u, s, vt = svds(A_float, k=64)
+    user_embeddings = u * np.sqrt(s)
+    item_embeddings = vt.T * np.sqrt(s)
+    
     A_sq = A.dot(A)
     d = np.array(np.abs(A).sum(axis=1)).flatten()
     
-    def score_edges(edges):
+    def score_edges_fstar(edges):
         scores = []
-        for u, v in edges:
-            A3_uv = A[u, :].dot(A_sq[:, v])[0, 0]
-            du, dv = d[u], d[v]
+        for u_idx, v_idx in edges:
+            A3_uv = A[u_idx, :].dot(A_sq[:, v_idx])[0, 0]
+            du, dv = d[u_idx], d[v_idx]
             if du == 0 or dv == 0:
                 scores.append(0)
                 continue
-            # Assume edge is +1 for prediction scoring
             C4_sum = 1 * A3_uv - du - dv + 1
             max_bound = max(1, (du - 1) * (dv - 1))
             normalized = C4_sum / max_bound
@@ -161,17 +171,33 @@ def benchmark_link_prediction():
             scores.append(F_star)
         return np.array(scores)
         
-    pos_scores = score_edges(test_pos)
-    neg_scores = score_edges(test_neg)
+    def score_edges_svd(edges):
+        scores = []
+        for u_idx, v_idx in edges:
+            scores.append(np.dot(user_embeddings[u_idx], item_embeddings[v_idx]))
+        return np.array(scores)
+        
+    pos_scores_f = score_edges_fstar(test_pos)
+    neg_scores_f = score_edges_fstar(test_neg)
     
-    y_true = np.concatenate([np.ones(len(pos_scores)), np.zeros(len(neg_scores))])
-    y_scores = np.concatenate([pos_scores, neg_scores])
+    pos_scores_s = score_edges_svd(test_pos)
+    neg_scores_s = score_edges_svd(test_neg)
     
-    auc = roc_auc_score(y_true, y_scores)
-    print(f"Link Prediction AUC using F*: {auc:.4f}")
+    y_true = np.concatenate([np.ones(len(test_pos)), np.zeros(len(test_neg))])
+    
+    y_scores_f = np.concatenate([pos_scores_f, neg_scores_f])
+    y_scores_s = np.concatenate([pos_scores_s, neg_scores_s])
+    
+    # F* is inversely correlated with edge presence due to degree penalty
+    auc_f = roc_auc_score(y_true, -y_scores_f)
+    auc_s = roc_auc_score(y_true, y_scores_s)
+    
+    print(f"Link Prediction AUC using F*: {auc_f:.4f}")
+    print(f"Link Prediction AUC using TruncatedSVD (k=64): {auc_s:.4f}")
     
     with open("link_prediction_results.txt", "w") as f:
-        f.write(f"Link Prediction AUC: {auc:.4f}\n")
+        f.write(f"Link Prediction AUC (F*): {auc_f:.4f}\n")
+        f.write(f"Link Prediction AUC (SVD): {auc_s:.4f}\n")
 
 if __name__ == "__main__":
     generate_sbm_sweep()
