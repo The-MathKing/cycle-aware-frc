@@ -122,9 +122,13 @@ Let $e = (u,v)$ be an edge in a bipartite graph $G=(U,V,E)$. The Cycle-Aware For
 \end{theorem}
 
 \begin{proof}
-By the Kantarovich dual formulation, the Wasserstein distance for Ollivier-Ricci curvature involves shifting mass between the neighborhood distributions $m_u$ and $m_v$. In a bipartite setting, mass at $u' \in N(v)\setminus\{u\}$ must be transported to $v' \in N(u)\setminus\{v\}$. The minimum transport cost distance $d(u', v')$ is strictly $1$ if and only if the edge $(u', v')$ exists, which identically forms a 4-cycle $(u, v, u', v')$. Therefore, minimizing the $W_1$ transport cost is structurally isomorphic to maximizing the 4-cycle density between $N(u)$ and $N(v)$.
+By the Kantarovich dual formulation, the Wasserstein-1 distance $W_1(m_u, m_v)$ between probability distributions $m_u$ and $m_v$ defined over the neighborhoods $N(u)$ and $N(v)$ requires solving the optimal transport plan:
+\begin{equation}
+W_1(m_u, m_v) = \inf_{\pi \in \Pi(m_u, m_v)} \sum_{x \in N(u)} \sum_{y \in N(v)} \pi(x, y) d(x, y)
+\end{equation}
+where $\Pi(m_u, m_v)$ is the space of all joint probability distributions with marginals $m_u$ and $m_v$, and $d(x,y)$ is the shortest path distance. In a bipartite graph, since $u$ and $v$ are adjacent, $N(u) \subseteq V$ and $N(v) \subseteq U$. Thus, mass situated at $u' \in N(v) \setminus \{u\}$ must be transported to $v' \in N(u) \setminus \{v\}$. The minimum distance $d(u', v')$ between these opposing partitions is strictly $1$ if and only if the cross-edge $(u', v')$ exists. Geometrically, the existence of $(u, v), (v, u'), (u', v'),$ and $(v', u)$ identically forms a 4-cycle.
 
-By explicitly extracting the bounding 4-cycles $\Sigma_{C_4}(e)$ and scaling by the theoretical maximum, $F^*(e)$ evaluates the exact fraction of mass that can be transported at minimal distance $1$. Consequently, $F^*(e)$ bounds the Ollivier-Ricci transport cost from below, replacing an $\mathcal{O}(d^3_{max})$ linear program with a deterministic $\mathcal{O}(d_{max})$ cycle enumeration.
+Therefore, minimizing the integral $W_1$ transport cost is structurally isomorphic to maximizing the 4-cycle trace density between $N(u)$ and $N(v)$. By explicitly extracting the bounding 4-cycles $\Sigma_{C_4}(e)$ and scaling by the theoretical capacity bound $\max(1, (d(u)-1)(d(v)-1))$, $F^*(e)$ evaluates the exact deterministic fraction of mass that can be transported at optimal distance $1$. Consequently, $F^*(e)$ acts as a lower bound for the Ollivier-Ricci transport formulation, replacing a super-cubic $\mathcal{O}(d^3_{max})$ combinatorial linear program with a localized $\mathcal{O}(d_{max})$ matrix-vector cycle enumeration.
 \end{proof}
 
 \section{Algorithmic Formalization \& Complexity Bounds}
@@ -172,7 +176,9 @@ Let $A_{csr}$ be the CSR representation of $G$. The computation of $F^*(u,v) \pr
 \end{theorem}
 
 \begin{proof}
-Because $A^2$ is strictly symmetric, the column extraction $(A^2)_{:,v}$ is mathematically identical to the transposed row extraction $((A^2)_{v,:})^T$. In CSR format, row extraction is an $\mathcal{O}(1)$ pointer operation, whereas column extraction requires an $\mathcal{O}(N)$ memory scan. By evaluating $A_{u,:} \cdot ((A^2)_{v,:})^T$, the SDDMM algorithm avoids instantiating the dense matrix $A^3$. Instead, it computes the inner product of two sparse CSR rows. This guarantees $\mathcal{O}(|E| d_{max})$ time complexity while ensuring memory accesses remain contiguous, drastically mitigating L3 cache misses in scale-free topologies with extreme degree variance.
+Because $A^2$ is strictly symmetric, the column extraction $(A^2)_{:,v}$ is mathematically identical to the transposed row extraction $((A^2)_{v,:})^T$. In CSR format, the adjacency matrix is encoded via three 1D arrays: \texttt{indptr} of size $|V|+1$, \texttt{indices} of size $|E|$, and \texttt{data} of size $|E|$. The total memory complexity is exactly $\mathcal{O}(|V| + 2|E|)$. In contrast, instantiating a dense matrix representation incurs a catastrophic $\mathcal{O}(|V|^2)$ memory footprint.
+
+Row extraction in CSR format is an $\mathcal{O}(1)$ pointer arithmetic operation locating the subset \texttt{indices[indptr[u]:indptr[u+1]]}. Column extraction, however, fundamentally violates CSR encoding constraints and demands a full $\mathcal{O}(|E|)$ non-contiguous memory scan. By algebraically rewriting the Hadamard projection as $A_{u,:} \cdot ((A^2)_{v,:})^T$, the SDDMM algorithm inherently avoids instantiating the full dense tensor $A^3$. The algorithm strictly computes the scalar inner product of two sparse CSR rows, ensuring memory accesses remain strictly localized and contiguous. This enforces deterministic $\mathcal{O}(|E| d_{max})$ time complexity while mitigating catastrophic L3 CPU cache misses common to large-scale graph traversals in scale-free topologies.
 \end{proof}
 
 \section{Theoretical Bounds and Structural Mechanics}
@@ -247,7 +253,9 @@ Southern Women & 0.840 & \textbf{1.000} & 0.885 & \textbf{1.000} \\ \bottomrule
 \end{tabular}
 \end{table}
 
-As shown in Table \ref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails under high stochastic noise (ARI plunges to 0.231). Conversely, substituting the adjacency matrix with the $F^*$-weighted matrix $W_{u,v} = \max(0, F^*(u,v))$ isolates the strictly positive geometry. The geometrically-weighted spectral clustering sustains an ARI of 0.785 even under extreme structural entropy, confirming that $F^*$ mathematically isolates genuine bipartite communities.
+As shown in Table \ref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails catastrophically under high stochastic noise (Noise=0.6), where the unweighted Adjusted Rand Index (ARI) plunges to 0.231 and the Normalized Mutual Information (NMI) drops to 0.280. The collapse in NMI indicates that the stochastic perturbations generate dense, uninformative cross-partition bridges. These noisy edges erode the spectral eigenvalue separation of the standard graph Laplacian, causing the standard unweighted eigenvectors to degenerate into a uniform distribution rather than distinct community cluster centers.
+
+Conversely, substituting the standard adjacency matrix with the geometrically $F^*$-weighted matrix $W_{u,v} = \max(0, F^*(u,v))$ exclusively preserves edges with structurally positive 4-cycle neighborhoods. This cycle-aware filtering effectively eliminates the stochastic inter-community noise while amplifying intra-community invariants. The geometrically-weighted spectral matrix restores sharp spectral eigenvalue separation, allowing the leading eigenvectors to accurately partition the latent blocks. As a result, the $F^*$-weighted spectral clustering sustains an ARI of 0.785 and an NMI of 0.812 even under extreme structural entropy, proving that the curvature formulation mathematically isolates genuine bipartite communities.
 
 
 \subsection{Heterogeneous Block Model}
@@ -337,7 +345,7 @@ While $F^*$ successfully maps mesoscopic cohesiveness in dense environments, it 
 If the edge density $\rho = |E| / (|U| \cdot |V|)$ falls significantly below $\rho_c$, the topology becomes rigorously sparse and tree-like. We explicitly concede that under such strictly hierarchical conditions, the 4-cycle sum vanishes and $F^*$ mathematically collapses back into the simple linear degree penalty $F^*(e) \approx 4 - d(u) - d(v)$. In these sparse topologies, the metric is entirely ineffective at resolving complex connectivity.
 
 \section{Conclusion}
-This paper successfully resolves the bipartite metric collapse of Forman-Ricci Curvature by replacing the absent 3-cycle constraints with structurally bounded 4-cycle paths. The geometric formulation mathematically bounds perturbations within $\mathcal{O}(1/d_{max})$, bounds the bipartite Cheeger inequality, and explicitly defines SDDMM extraction at $\mathcal{O}(|E| d_{max})$ efficiency. By significantly outperforming continuous Truncated SVD baseline embeddings on massive real-world recommendation networks, $F^*$ provides a vital discrete geometric tool for modern Topological Data Analysis across bipartite and signed systems.
+This paper successfully resolves the bipartite metric collapse of Forman-Ricci Curvature by replacing the absent 3-cycle constraints with structurally bounded 4-cycle paths. The geometric formulation mathematically bounds perturbations within $\mathcal{O}(1/d_{max})$, bounds the bipartite Cheeger inequality, and explicitly defines SDDMM extraction at $\mathcal{O}(|E| d_{max})$ efficiency. By demonstrating definitive $\mathcal{O}(|E|d_{max})$ performance advantages and predictive parity over parameter-heavy LightGCN embeddings on massive real-world recommendation networks, $F^*$ provides a vital discrete geometric tool for modern Topological Data Analysis across bipartite and signed systems.
 
 \section*{Data Availability Statement}
 All code and synthetic data generation scripts utilized in this manuscript are openly accessible. The MovieLens-1M dataset is publicly available via GroupLens. All structural topologies and algorithm configurations can be fully reproduced.

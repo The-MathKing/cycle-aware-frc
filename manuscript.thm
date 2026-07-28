@@ -5,13 +5,13 @@
 \contentsline {proof}{{Proof}{2}{}}{4}{proof.17}%
 \contentsline {theorem}{{Theorem}{4.3}{Wasserstein Transport Approximation Bounds}}{4}{theorem.21}%
 \contentsline {proof}{{Proof}{3}{}}{4}{proof.22}%
-\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{4}{theorem.27}%
-\contentsline {proof}{{Proof}{4}{}}{4}{proof.28}%
-\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{5}{theorem.30}%
-\contentsline {proof}{{Proof}{5}{}}{5}{proof.31}%
-\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{6}{theorem.34}%
-\contentsline {proof}{{Proof}{6}{}}{6}{proof.36}%
-\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{6}{theorem.39}%
-\contentsline {proof}{{Proof}{7}{}}{6}{proof.40}%
-\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{7}{theorem.42}%
-\contentsline {proof}{{Proof}{8}{}}{7}{proof.43}%
+\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{5}{theorem.28}%
+\contentsline {proof}{{Proof}{4}{}}{5}{proof.29}%
+\contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{6}{theorem.31}%
+\contentsline {proof}{{Proof}{5}{}}{6}{proof.32}%
+\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{6}{theorem.35}%
+\contentsline {proof}{{Proof}{6}{}}{6}{proof.37}%
+\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{7}{theorem.40}%
+\contentsline {proof}{{Proof}{7}{}}{7}{proof.41}%
+\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{7}{theorem.43}%
+\contentsline {proof}{{Proof}{8}{}}{7}{proof.44}%
