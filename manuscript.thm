@@ -9,9 +9,13 @@
 \contentsline {proof}{{Proof}{4}{}}{5}{proof.29}%
 \contentsline {theorem}{{Theorem}{5.2}{L3 Cache Mitigation via Row-by-Row Extraction}}{6}{theorem.31}%
 \contentsline {proof}{{Proof}{5}{}}{6}{proof.32}%
-\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{6}{theorem.35}%
-\contentsline {proof}{{Proof}{6}{}}{6}{proof.37}%
-\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{7}{theorem.40}%
-\contentsline {proof}{{Proof}{7}{}}{7}{proof.41}%
-\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{7}{theorem.43}%
+\contentsline {theorem}{{Theorem}{5.3}{Parallel Time Complexity}}{6}{theorem.34}%
+\contentsline {proof}{{Proof}{6}{}}{6}{proof.35}%
+\contentsline {theorem}{{Theorem}{6.1}{Asymptotic Scaling in $G(n,n,p)$}}{6}{theorem.38}%
+\contentsline {proof}{{Proof}{7}{}}{7}{proof.40}%
+\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{7}{theorem.43}%
 \contentsline {proof}{{Proof}{8}{}}{7}{proof.44}%
+\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation}}{7}{theorem.46}%
+\contentsline {proof}{{Proof}{9}{}}{7}{proof.47}%
+\contentsline {theorem}{{Theorem}{6.4}{Curvature-Entropy Minimization}}{8}{theorem.51}%
+\contentsline {proof}{{Proof}{10}{}}{8}{proof.52}%
