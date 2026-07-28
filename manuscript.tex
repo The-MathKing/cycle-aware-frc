@@ -88,11 +88,11 @@ By substituting the structurally balanced $F^*(e)$ as the 1-skeleton differentia
 \begin{equation}
 x^T \mathcal{L} x \ge F_{min}^* \sum_{(u,v) \in E} (x_u - x_v)^2 - \frac{1}{d_{max}^2} \sum_{C \in \mathcal{C}_4} (\partial C) x^2
 \end{equation}
-The boundary sum $\sum_{C \in \mathcal{C}_4} (\partial C)$ counts the fractional overlap of orthogonal 1-forms traversing length-4 walks. By expanding the Laplacian polynomial, the ratio of returning random walks of length 4 is algebraically equivalent to $\text{tr}(A^4)$. Normalizing this topological mass by the maximum volume $|E|d_{max}$ maps the discrete boundary sum strictly to the spectral domain:
+The boundary sum $\sum_{C \in \mathcal{C}_4} (\partial C)$ counts the fractional overlap of orthogonal 1-forms traversing length-4 walks. By expanding the Laplacian polynomial, the ratio of returning random walks of length 4 is algebraically equivalent to $\text{tr}(A^4)$. Normalizing this topological mass by the maximum volume $|E|d_{max}$ maps the discrete boundary sum strictly to the spectral domain via an empirically-motivated heuristic approximation:
 \begin{equation}
-\sum_{C \in \mathcal{C}_4} (\partial C) x^2 \propto \frac{\text{tr}(A^4)}{|E| d_{max}} F_{min}^*
+\sum_{C \in \mathcal{C}_4} (\partial C) x^2 \approx \frac{\text{tr}(A^4)}{|E| d_{max}} F_{min}^*
 \end{equation}
-Substituting this geometric trace normalization into the initial bounds yields the explicit continuous inequality:
+Substituting this geometric trace approximation into the initial bounds yields the explicit continuous inequality:
 \begin{equation}
 \lambda_2 \ge \frac{F_{min}^*}{d_{max}} - \frac{F_{min}^* \text{tr}(A^4)}{|E| d_{max}^3} = \frac{F_{min}^*}{d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right)
 \end{equation}
@@ -147,7 +147,7 @@ To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matr
 
 \begin{algorithm2e}[htbp]
 \caption{Sparse $C_4$ Bipartite Edge Extraction via SpSpMM}
-\label{alg:sddmm}
+\label{alg:spspmm}
 \SetAlgoLined
 \KwIn{Sparse Bipartite Adjacency Matrix $A$, Edge list $E$}
 \KwOut{Cycle-Aware Curvature Array $F^*$}
@@ -167,7 +167,7 @@ $F^* \gets \text{empty\_array}(|E|)$\;
 
 \begin{theorem}[Computational Complexity Limits]
 \label{thm:complexity}
-The time complexity of Algorithm \ref{alg:sddmm} is bounded by $\mathcal{O}(|E| d_{max})$, and the space complexity is strictly $\mathcal{O}(|E| + |V|)$.
+The time complexity of Algorithm \ref{alg:spspmm} is bounded by $\mathcal{O}(|E| d_{max})$, and the space complexity is strictly $\mathcal{O}(|E| + |V|)$.
 \end{theorem}
 
 \begin{proof}
@@ -192,7 +192,7 @@ Row extraction in CSR format is an $\mathcal{O}(1)$ pointer arithmetic operation
 \end{proof}
 
 \subsection{Embarrassingly Parallel Execution Limits}
-By avoiding full tensor materialization, the extraction of $F^*$ via CSR-based SDDMM is fundamentally decoupled across edges.
+By avoiding full tensor materialization, the extraction of $F^*$ via CSR-based SpSpMM is fundamentally decoupled across edges.
 
 \begin{theorem}[Parallel Time Complexity]
 Let $p$ be the number of independent processing threads. The computation of $F^*$ for all $|E|$ edges possesses a strict parallel time complexity of $\mathcal{O}\left(\frac{|E| d_{max}}{p}\right)$, with zero cross-thread memory collision.
@@ -285,8 +285,10 @@ To demonstrate the empirical utility of $F^*$ beyond link prediction, we applied
 \textbf{Dataset} & \textbf{Unweighted ARI} & \textbf{$F^*$-Weighted ARI} & \textbf{Unweighted NMI} & \textbf{$F^*$-Weighted NMI} \\ \midrule
 Bipartite SBM (Noise=0.3) & 0.612 $\pm$ 0.005 & \textbf{0.924 $\pm$ 0.003} & 0.655 $\pm$ 0.006 & \textbf{0.941 $\pm$ 0.002} \\
 Bipartite SBM (Noise=0.6) & 0.231 $\pm$ 0.012 & \textbf{0.785 $\pm$ 0.008} & 0.280 $\pm$ 0.015 & \textbf{0.812 $\pm$ 0.010} \\
-Southern Women & 0.840 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} & 0.885 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} \\ \bottomrule
+Southern Women* & 0.840 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} & 0.885 $\pm$ 0.000 & \textbf{1.000 $\pm$ 0.000} \\ \bottomrule
 \end{tabular}
+\vspace{1ex} \\
+{\footnotesize *Note: The Southern Women dataset is a fixed real-world topology; the $\pm$ 0.000 variance indicates deterministic execution rather than stochastic generation.}
 \end{table}
 
 As shown in Table \ref{tab:clustering}, applying standard spectral clustering on the unweighted adjacency matrix fails catastrophically under high stochastic noise (Noise=0.6), where the unweighted Adjusted Rand Index (ARI) plunges to 0.231 and the Normalized Mutual Information (NMI) drops to 0.280. The collapse in NMI indicates that the stochastic perturbations generate dense, uninformative cross-partition bridges. These noisy edges erode the spectral eigenvalue separation of the standard graph Laplacian, causing the standard unweighted eigenvectors to degenerate into a uniform distribution rather than distinct community cluster centers.
@@ -337,7 +339,7 @@ To rigorously prove that the predictive validity of the metric stems from the so
 On the true ML-1M topology, $F^*$ achieved a strong AUC-ROC of $0.893 \pm 0.004$. Conversely, on the randomized null graph (where $F^*$ effectively acts only as the baseline $4-d(u)-d(v)$ penalty since 4-cycles are topologically scarce), the predictive performance plummeted to random chance ($\approx 0.50$). This ablation unequivocally confirms that the metric's empirical power originates structurally from mesoscopic 4-cycles, not trivial degree sequences.
 
 \subsection{Large-Scale Link Prediction (MovieLens-1M and Amazon Product Reviews)}
-To establish absolute hardware scaling limits, the optimized SDDMM algorithm was deployed for Link Prediction across two distinct topological domains:
+To establish absolute hardware scaling limits, the optimized SpSpMM algorithm was deployed for Link Prediction across two distinct topological domains:
 \begin{enumerate}
     \item \textbf{MovieLens-1M:} A dense bipartite structure analyzing exactly 1,000,209 undirected edges spanning 10,003 unique vertices.
     \item \textbf{Amazon Product Reviews (Video Games 5-Core):} A sparser, highly skewed bipartite e-commerce graph spanning hundreds of thousands of transactions.
@@ -356,7 +358,7 @@ For both datasets, link prediction evaluation was formalized by randomly masking
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{complexity_loglog.png}
-    \caption{Log-Log Computational Complexity benchmark. The deterministic $\mathcal{O}(|E|d_{max})$ SDDMM extraction significantly bypasses the exponential gradient descent limits of PyTorch LightGCN.}
+    \caption{Log-Log Computational Complexity benchmark. The deterministic $\mathcal{O}(|E|d_{max})$ SpSpMM extraction significantly bypasses the exponential gradient descent limits of PyTorch LightGCN.}
     \label{fig:complexity}
 \end{figure}
 
@@ -372,7 +374,7 @@ Amazon Video Games & 0.6833 $\pm$ 0.0120 & \textbf{0.7869 $\pm$ 0.0084} \\ \bott
 \end{tabular}
 \end{table}
 
-The zero-parameter deterministic $F^*$ curvature dramatically outperforms the LightGCN architecture on the Amazon dataset and achieves identical state-of-the-art accuracy on MovieLens.
+The zero-parameter deterministic $F^*$ curvature dramatically outperforms the LightGCN architecture on the Amazon dataset and achieves statistically comparable predictive accuracy on MovieLens.
 
 Crucially, the computational asymmetry between these models is massive. LightGCN requires thousands of GPU tensor operations across dozens of gradient descent epochs. In stark contrast, evaluating $F^*(e)$ requires zero parameterized training. Operating strictly in $\mathcal{O}(|E| d_{max})$ time via SpSpMM, the geometric invariant achieves GNN-adjacent predictive accuracy while executing locally in seconds on consumer CPU hardware.
 
