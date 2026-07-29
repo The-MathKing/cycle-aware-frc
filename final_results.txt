@@ -1,3 +1,0 @@
-Dataset,SVD,LightGCN,F_star
-Amazon Video Games,0.7944,0.6833,0.7869
-MovieLens-1M,0.9414,0.8961,0.8934
