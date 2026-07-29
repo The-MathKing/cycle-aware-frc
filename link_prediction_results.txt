@@ -1,2 +1,2 @@
-Link Prediction AUC (F*): 0.8879
-Link Prediction AUC (SVD): 0.8033
+Link Prediction AUC (F*): 0.8845
+Link Prediction AUC (SVD): 0.8191
