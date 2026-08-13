@@ -114,13 +114,11 @@ def run_pipeline(dataset_name, rows, cols, data, num_users):
     u_svd, s_svd, vt_svd = svds(A_float, k=64)
     user_emb_svd = u_svd * np.sqrt(s_svd)
     item_emb_svd = vt_svd.T * np.sqrt(s_svd)
-    
-    # --- 2. Compute F* Cycle-Aware Curvature ---
-    print("2. Computing F*...")
-    A_sq = A_train.dot(A_train)
+
+    # Pre-compute degree vector for F* scoring (no A² stored globally).
     d = np.array(np.abs(A_train).sum(axis=1)).flatten()
-    
-    # --- 3. Train LightGCN Baseline ---
+
+    # --- 2. Train LightGCN Baseline ---
     print("3. Training LightGCN (PyTorch Geometric)...")
     device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
     print(f"Using device: {device}")
@@ -174,11 +172,13 @@ def run_pipeline(dataset_name, rows, cols, data, num_users):
         return torch.dot(all_emb[u], all_emb[v]).item()
         
     def score_fstar(u, v):
-        A3_uv = A_train[u, :].dot(A_sq[:, v])[0, 0]
+        # Compute (A^3)_{u,v} on the fly: A[u,:] @ A @ e_v = (A[u,:] @ A)[v]
+        # This avoids storing A^2; we compute one row of A^2 per query.
         du, dv = d[u], d[v]
         if du == 0 or dv == 0:
             return 0
-        C4_sum = 1 * A3_uv - du - dv + 1
+        row_A2_at_v = float(A_train.getrow(u).dot(A_train).getcol(v).sum())
+        C4_sum = row_A2_at_v - du - dv + 1  # A_{uv}=1 for positive edges only
         max_bound = max(1, (du - 1) * (dv - 1))
         normalized = C4_sum / max_bound
         return 4 - du - dv + 3.0 * min(du - 1, dv - 1) * normalized

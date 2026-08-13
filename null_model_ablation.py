@@ -68,21 +68,20 @@ def generate_bipartite_configuration_model(rows, cols):
 
 def compute_fstar_scores(train_rows, train_cols, train_data, test_pos, test_neg, n):
     A_train = sp.csr_matrix((train_data, (train_rows, train_cols)), shape=(n, n))
-    A_sq = A_train.dot(A_train)
     d = np.array(np.abs(A_train).sum(axis=1)).flatten()
-    
+
     def score_fstar(u, v):
-        # A_sq is symmetric, so A_sq[:, v] == A_sq[v, :].T
-        # Row extraction on CSR is O(1), column extraction is O(N)
-        A3_uv = A_train[u, :].dot(A_sq[v, :].T)[0, 0]
+        # Compute A³_{u,v} on the fly without storing A².
+        # A[u,:] @ A gives one row of A²; we then pick column v.
+        row_A2_at_v = float(A_train.getrow(u).dot(A_train).getcol(v).sum())
         du, dv = d[u], d[v]
         if du == 0 or dv == 0:
             return 0
-        C4_sum = 1 * A3_uv - du - dv + 1
+        C4_sum = row_A2_at_v - du - dv + 1
         max_bound = max(1, (du - 1) * (dv - 1))
         normalized = C4_sum / max_bound
         return 4 - du - dv + 3.0 * min(du - 1, dv - 1) * normalized
-        
+
     pos_scores_fs = [-score_fstar(u,v) for u,v in test_pos] # Inverse correlation
     neg_scores_fs = [-score_fstar(u,v) for u,v in test_neg]
     return pos_scores_fs, neg_scores_fs

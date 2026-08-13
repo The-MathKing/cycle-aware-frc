@@ -28,21 +28,21 @@ def plot_topologies():
     A = sp.csr_matrix((data, (rows, cols)), shape=(n, n))
     
     print("Computing F* to extract core and fringe edges...")
-    A_sq = A.dot(A)
     d = np.array(np.abs(A).sum(axis=1)).flatten()
-    
+
     # We just need to score a subset of edges to find extremes
     # Let's just pick the first 10,000 edges to speed up
-    edges_to_score = list(zip(rows[:10000:2], cols[:10000:2])) 
-    
+    edges_to_score = list(zip(rows[:10000:2], cols[:10000:2]))
+
     scores = []
     for u, v in edges_to_score:
-        A3_uv = A[u, :].dot(A_sq[:, v])[0, 0]
+        # Compute A³_{u,v} on the fly without storing A²
+        row_A2_at_v = float(A.getrow(u).dot(A).getcol(v).sum())
         du, dv = d[u], d[v]
         if du == 0 or dv == 0:
             scores.append(0)
             continue
-        C4_sum = 1 * A3_uv - du - dv + 1
+        C4_sum = row_A2_at_v - du - dv + 1
         max_bound = max(1, (du - 1) * (dv - 1))
         normalized = C4_sum / max_bound
         F_star = 4 - du - dv + 3.0 * min(du - 1, dv - 1) * normalized
