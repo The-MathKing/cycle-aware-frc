@@ -58,12 +58,10 @@ def compute_signed_frc(A: sp.csr_matrix, gamma=3.0) -> np.ndarray:
         row_A = A.getrow(row)           # 1 x n, sparse
         row_A2 = row_A.dot(A)           # 1 x n, sparse or dense depending on fill
 
-        # Extract the entries at the needed column positions.
+        # Compute dot product of row_A2 with columns of A to get (A^3)_{u,v}
+        # Since A is symmetric, columns of A are just rows of A.
         cols_needed = [c for (_, c) in edge_list]
-        if sp.issparse(row_A2):
-            vals = np.asarray(row_A2[:, cols_needed].todense()).flatten()
-        else:
-            vals = np.asarray(row_A2).flatten()[cols_needed]
+        vals = row_A2.dot(A[cols_needed, :].T).toarray().flatten()
 
         for (eidx, _), val in zip(edge_list, vals):
             A3_uv[eidx] = val

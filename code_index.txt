@@ -1,0 +1,12 @@
+Index of Supplementary Code for Cycle-Aware Forman-Ricci Curvature
+
+This archive contains the Python scripts used to generate the results, baselines, and figures presented in the manuscript.
+
+Files included:
+- compute_frc.py         : Core algorithm for computing the Cycle-Aware F* metric via SpSpMM.
+- experiments.py         : Runs the SBM noise variance sweep and basic MovieLens-1M link prediction benchmark.
+- run_baselines.py       : Executes the comprehensive baselines (LightGCN, Truncated SVD) and compares them to F* across ML-1M and Amazon Video Games datasets.
+- null_model_ablation.py : Evaluates the ablation study using a degree-preserving null model to prove 4-cycle geometric utility.
+- plot_advanced.py       : Generates advanced visual plots (e.g., Log-Log complexity curves, dual-distribution KDE plots).
+- plot_topologies.py     : Visualizes the synthetic block models and extracts bipartite core/fringe macro-structures.
+- README.md              : Instructions and requirements for running the test scripts locally.

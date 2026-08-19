@@ -1,0 +1,16 @@
+\contentsline {definition}{{Definition}{3.1}{Cycle-Aware Forman-Ricci Curvature for Signed Bipartite Networks}}{2}{theorem.4}%
+\contentsline {heuristicclaim}{{Heuristic Claim}{1}{Heuristic Bipartite Spectral Gap Lower Bound}}{3}{heuristicclaim.9}%
+\contentsline {heuristicclaim}{{Heuristic Claim}{2}{Heuristic Bipartite Cheeger Inequality}}{4}{heuristicclaim.15}%
+\contentsline {remark}{{Remark}{1}{Connection to Ollivier-Ricci Curvature}}{5}{remark.21}%
+\contentsline {theorem}{{Theorem}{5.1}{Computational Complexity Limits}}{6}{theorem.26}%
+\contentsline {proof}{{Proof}{1}{}}{6}{proof.27}%
+\contentsline {remark}{{Remark}{2}{Hardware Locality of Row-by-Row Extraction}}{7}{remark.29}%
+\contentsline {remark}{{Remark}{3}{Parallel Scalability}}{7}{remark.31}%
+\contentsline {proposition}{{Proposition}{6.1}{Mean-Field Approximation of Asymptotic Scaling in $G(n,n,p)$}}{7}{theorem.34}%
+\contentsline {proof}{{Proof}{2}{Mean-field calculation}}{8}{proof.36}%
+\contentsline {theorem}{{Theorem}{6.2}{Topological Dimensionality Shift}}{8}{theorem.39}%
+\contentsline {proof}{{Proof}{3}{}}{8}{proof.40}%
+\contentsline {theorem}{{Theorem}{6.3}{Lipschitz Continuity of Edge Perturbation, Vertex-Disjoint Case}}{9}{theorem.42}%
+\contentsline {proof}{{Proof}{4}{}}{9}{proof.43}%
+\contentsline {remark}{{Remark}{4}{Adjacent-Edge Case: the Vertex-Disjointness Hypothesis is Necessary}}{9}{remark.46}%
+\contentsline {remark}{{Remark}{5}{Curvature-Entropy Heuristic}}{10}{remark.49}%

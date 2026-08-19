@@ -4,8 +4,6 @@ ml-1m/
 venv/
 __pycache__/
 
-local_manuscript/
-*.pdf
 *.png
 *_results.txt
 *_output.txt
