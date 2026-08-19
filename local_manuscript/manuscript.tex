@@ -154,11 +154,11 @@ To evaluate $F^*(e)$ computationally across massive graphs, we bypass dense matr
 \caption{Sparse $C_4$ Bipartite Edge Extraction via Masked SpSpMM}
 \label{alg:spspmm}
 \SetAlgoLined
-\KwIn{Sparse Bipartite Adjacency Matrix $A$, Node set $V$}
+\KwIn{Sparse Bipartite Adjacency Matrix $A$, One partition $U$}
 \KwOut{Cycle-Aware Curvature Array $F^*$}
 $d \gets \text{row\_sum}(|A|)$\;
 $F^* \gets \text{empty\_array}(|E|)$\;
-\ForEach{row $u \in V$}{
+\ForEach{row $u \in U$}{
     $row\_A2 \gets A[u, :] \times A$ \tcp*{Compute single row on the fly}
     \ForEach{neighbor $v \in N(u)$}{
         $du \gets d[u]$\;
@@ -178,7 +178,7 @@ The time complexity of \cref{alg:spspmm} is bounded by $\mathcal{O}(|E| d_{max})
 \end{theorem}
 
 \begin{proof}
-\textbf{Time Complexity:} Algorithm~\ref{alg:spspmm} proceeds row-by-row. For each row $u$ of $A$, it computes the single row $A[u,:]\cdot A$ of $A^2$ as a sparse matrix-vector product, costing $\mathcal{O}(d(u) \cdot d_{max})$ time. Over all distinct rows, the total SpGEMM cost is $\mathcal{O}(\sum_u d(u) d_{max})$. By the handshake lemma, $\sum_u d(u) = |E|$ when $u$ ranges over one side of the bipartition, so this cost is exactly $\mathcal{O}(|E| d_{max})$; this identity holds regardless of how skewed the degree distribution is, since $\sum_u d(u)$ is fixed by the edge count alone and does not depend on the shape of the distribution. For each of the $|E|$ edges $(u,v)$, extracting the scalar $(A^3)_{u,v} = \text{row\_A2} \cdot A[v,:]$ requires computing a dot product between the already-computed sparse row of $A^2$ and the sparse row $v$ of $A$. Since row $v$ has exactly $d(v) \le d_{max}$ non-zeros, the dot product costs $\mathcal{O}(d_{max})$ per edge. Summing over all edges yields extraction cost $\mathcal{O}(|E| d_{max})$, the same order as the SpGEMM cost above, so the overall time complexity is $\mathcal{O}(|E| d_{max})$ -- a $d_{max}^2$ improvement over the Ollivier-Ricci optimal transport bound of $\mathcal{O}(|E| d_{max}^3)$.
+\textbf{Time Complexity:} Algorithm~\ref{alg:spspmm} proceeds row-by-row. For each row $u \in U$, it computes the single row $A[u,:]\cdot A$ of $A^2$ as a sparse matrix-vector product, costing $\mathcal{O}(d(u) \cdot d_{max})$ time. Over all distinct rows in $U$, the total SpGEMM cost is $\mathcal{O}(\sum_u d(u) d_{max})$. By the handshake lemma, $\sum_{u \in U} d(u) = |E|$ because $U$ is exactly one side of the bipartition, so this cost is exactly $\mathcal{O}(|E| d_{max})$; this identity holds regardless of how skewed the degree distribution is, since $\sum_u d(u)$ is fixed by the edge count alone and does not depend on the shape of the distribution. For each of the $|E|$ edges $(u,v)$, extracting the scalar $(A^3)_{u,v} = \text{row\_A2} \cdot A[v,:]$ requires computing a dot product between the already-computed sparse row of $A^2$ and the sparse row $v$ of $A$. Since row $v$ has exactly $d(v) \le d_{max}$ non-zeros, the dot product costs $\mathcal{O}(d_{max})$ per edge. Summing over all edges yields extraction cost $\mathcal{O}(|E| d_{max})$, the same order as the SpGEMM cost above, so the overall time complexity is $\mathcal{O}(|E| d_{max})$ -- a $d_{max}^2$ improvement over the Ollivier-Ricci optimal transport bound of $\mathcal{O}(|E| d_{max}^3)$.
 
 \textbf{Space Complexity:} The algorithm stores the sparse $A$ matrix ($O(|E|)$ memory), the degree array ($O(|V|)$), and the output curvature array ($O(|E|)$). Crucially, it does \emph{not} materialize $A^2$ globally: each row of $A^2$ is computed, used to extract the needed scalar entries, and then discarded before the next row is processed. The peak live memory for intermediate row computation is $O(\mathrm{nnz}(r_{A^2}))$ for a single row of $A^2$, which is bounded by $O(n)$ in the worst case but is $O(d_{max}^2)$ on average. Total space complexity is therefore $\mathcal{O}(|E| + |V|)$ plus the transient single-row buffer.
 \end{proof}
