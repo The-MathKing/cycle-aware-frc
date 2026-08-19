@@ -51,6 +51,8 @@ A closely related development was introduced by Fesser et al. \cite{fesser2024au
 
 \section{Mathematical Formulation} 
 
+Before formalizing the metric, we establish our core notation. Let $A$ denote the sparse adjacency matrix, $d(u)$ the unweighted degree of node $u$, and $\Sigma_{C_4}(u, v)$ the number of structurally-bound 4-cycles traversing edge $e=(u,v)$. The proposed Cycle-Aware curvature for an edge is denoted as $F^*(e)$.
+
 \begin{definition}[Cycle-Aware Forman-Ricci Curvature for Signed Bipartite Networks] 
 \label{def:curvature} Let $G = (V, E, W)$ be a simple signed bipartite graph with symmetric adjacency matrix $A$, where $A_{uv} \in \{-1, 0, 1\}$. For an edge $e=(u,v)\in E$, let $d(u)$ and $d(v)$ denote the unweighted degrees of its endpoints, and let $\mathcal{C}_4(e)$ be the set of all 4-cycles containing $e$. The structural balance of a cycle $C \in \mathcal{C}_4(e)$ is given by $\mathrm{sgn}(C)=\prod_{e'\in C}A_{e'}$. Since the number of possible 4-cycles grows quadratically with node degree in dense graphs, the cumulative cycle contribution is normalized by the theoretical maximum number of valid 4-cycles, $\max(1,(d(u)-1)(d(v)-1))$. This keeps the cycle term bounded relative to the local degree rather than allowing it to grow without bound. The Cycle-Aware Forman-Ricci Curvature, denoted $F^*(e)$, is defined as: 
 \begin{equation} 
@@ -73,19 +75,18 @@ Rather than treating the use of 4-cycles as only a conceptual extension, we also
 
 The matrix entry $(A^3)_{uv}$ represents the sum of signed edge products over all walks of length three between $u$ and $v$. Removing the degenerate walks (such as $u\rightarrow v\rightarrow x\rightarrow v$) isolates the exact signed contribution of each 4-cycle without duplication. Consequently, computing $(A^3)_{uv}$ serves as an efficient sparse matrix operation that makes the proposed curvature practical to evaluate while maintaining linear-bounded runtime behavior.
 
-\section{Spectral Graph Theory Integration}
+\section{Discussion: Spectral Conjectures and Future Work}
 
 Standard Forman-Ricci Curvature acts as a lower bound for the discrete Laplacian via the Bochner-Weitzenb{\"o}ck formula. In bipartite graphs, this structural linkage must be re-derived against the spectral gap. Let $\mathcal{L} = D^{-1/2}(D - A)D^{-1/2}$ be the normalized Laplacian of a bipartite graph $G$, with eigenvalues $0 = \lambda_1 \le \lambda_2 \le \dots \le \lambda_n \le 2$. Throughout the paper, $F_{min}^* := \min_{e \in E} F^*(e)$.
 
-\noindent \textbf{A note on rigor.} The two results in this section (Heuristic Claims~\ref{thm:spectralgap} and \ref{thm:cheeger}) are \emph{not} proved to the standard of the rest of the paper: the derivation below relies on an unproven approximation step (\cref{eq:heuristic_approx}) with no error term. We therefore use a distinct "Heuristic Claim" environment, rather than Proposition/Theorem, and give a "Heuristic derivation" rather than a \texttt{proof} block, so the typography does not overstate what has actually been established. See the Limitations section for further discussion.
+While the algorithms and metrics presented earlier in this paper are rigorously derived, identifying their formal limits within spectral graph theory remains an open challenge. The following derivations rely on an unproven geometric trace approximation step (\cref{eq:heuristic_approx}) with no error term. We present them here not as rigorous theorems, but as conjectures and heuristic estimates to motivate future theoretical work linking this combinatorial metric to continuous diffusion processes.
 
-\begin{heuristicclaim}[Heuristic Bipartite Spectral Gap Lower Bound]
+\subsection{Conjecture: Bipartite Spectral Gap Lower Bound}
 \label{thm:spectralgap}
-The 4-cycle normalized curvature $F_{min}^*$ over a bipartite graph $G = (U, V, E)$ bounds the first non-trivial eigenvalue of the normalized discrete Laplacian $\mathcal{L}$, denoted $\lambda_2$, as:
+We conjecture that the 4-cycle normalized curvature $F_{min}^*$ over a bipartite graph $G = (U, V, E)$ bounds the first non-trivial eigenvalue of the normalized discrete Laplacian $\mathcal{L}$, denoted $\lambda_2$, as:
 \begin{equation}
 \lambda_2 \ge \frac{F_{min}^*}{d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right)
 \end{equation}
-\end{heuristicclaim}
 
 \smallskip
 \noindent\textit{Heuristic derivation.}\quad
@@ -110,17 +111,16 @@ Substituting this geometric trace approximation into the initial bounds yields t
 \end{equation}
 As $F_{min}^*$ normalizes the 4-cycle boundary operator algebraically, it successfully lifts the spectral lower bound from a trivial negative floor to an active spectral constraint, scaling proportionately with the geometric trace expansion. We emphasize again that \cref{eq:heuristic_approx} is an approximation, not an inequality with a controlled remainder, so the bound above should be read as a heuristic estimate rather than a proven lower bound.
 
-\begin{heuristicclaim}[Heuristic Bipartite Cheeger Inequality]
+\subsection{Conjecture: Bipartite Cheeger Inequality}
 \label{thm:cheeger}
 Let $h_G$ denote the Cheeger constant (conductance) of a bipartite graph $G$, mathematically defined as:
 \begin{equation*}
 h_G = \min_{S \subset V} \frac{|E(S, V \setminus S)|}{\min(\text{vol}(S), \text{vol}(V \setminus S))}
 \end{equation*}
-The 4-cycle normalized curvature bounds the bottleneckness of the network as:
+We conjecture that the 4-cycle normalized curvature heuristically bounds the bottleneckness of the network as:
 \begin{equation}
 \frac{F_{min}^*}{2 d_{max}} \left( 1 - \frac{\text{tr}(A^4)}{|E| d_{max}^2} \right) \le h_G \le \sqrt{\frac{4 d_{max} - 2F_{min}^* + \frac{2 F_{min}^* \text{tr}(A^4)}{|E| d_{max}^2}}{d_{max}}}
 \end{equation}
-\end{heuristicclaim}
 
 \smallskip
 \noindent\textit{Heuristic derivation.}\quad
@@ -273,7 +273,7 @@ The following is an informal argument connecting $F^*$ to the Von Neumann entrop
 \section{Empirical Validation \& Advanced Baselines}
 
 \subsection{Bipartite Community Detection via Geometric Edge Weighting}
-To demonstrate the empirical utility of $F^*$ beyond link prediction, we applied the curvature metric as edge weights for spectral clustering on Bipartite Stochastic Block Models (SBM) and the canonical Southern Women dataset. By mapping dense cores to highly positive $F^*$ values and sparse fringes to negative $F^*$ values, we naturally amplify the intra-community connectivity while penalizing inter-community noise.
+To demonstrate the empirical utility of $F^*$ beyond link prediction, we applied the curvature metric as edge weights for spectral clustering on Bipartite Stochastic Block Models (SBM) and the canonical Southern Women dataset. By mapping dense cores to highly positive $F^*$ values and sparse fringes to negative $F^*$ values, we naturally amplify the intra-community connectivity while penalizing inter-community noise. (We note that while highly connected \emph{local} mesoscopic structures drive $F^*$ positive, the massive scale of global hub degrees in scale-free networks will ultimately drive $F^*$ negative overall; we resolve this apparent contradiction rigorously in \cref{sec:link_pred}).
 
 \begin{table}[h]
 \centering
@@ -340,6 +340,7 @@ To confirm that the predictive validity of the metric stems from 4-cycle geometr
 On the true ML-1M topology, a representative single-run experiment (1{,}000 held-out test pairs, one random seed) yields an AUC-ROC of approximately $0.88$--$0.89$. The 10-seed averaged result reported in Table~\ref{tab:auc} ($0.8934 \pm 0.0031$) is computed over a larger test partition with independent seed variation. Conversely, on the randomized null graph, the predictive performance plummets to near random chance ($\approx 0.50$). This ablation confirms that the metric's empirical power originates from mesoscopic 4-cycles, not trivial degree sequences.
 
 \subsection{Large-Scale Link Prediction (MovieLens-1M and Amazon Product Reviews)}
+\label{sec:link_pred}
 To establish absolute hardware scaling limits, the optimized SpSpMM algorithm was deployed for Link Prediction across two distinct topological domains:
 \begin{enumerate}
     \item \textbf{MovieLens-1M:} A dense bipartite structure analyzing exactly 1,000,209 undirected edges spanning 10,003 unique vertices (6,040 users, 3,883 items).
@@ -383,7 +384,12 @@ The zero-parameter deterministic $F^*$ curvature outperforms the LightGCN archit
 Crucially, the computational asymmetry between these models is massive. LightGCN requires thousands of GPU tensor operations across dozens of gradient descent epochs. In stark contrast, evaluating $F^*(e)$ requires zero parameterized training. Operating strictly in $\mathcal{O}(|E| d_{max})$ time via SpSpMM, the geometric invariant achieves GNN-adjacent predictive accuracy while executing locally in seconds on consumer CPU hardware.
 
 \section{Positioning Relative to Prior Work}
-The core concept of utilizing 4-cycles to circumvent bipartite collapse is a highly intuitive, incremental progression in network science. In particular, our formulation explicitly builds upon the Augmented Forman 4-cycle (AF4) structure previously established by Fesser et al. \cite{fesser2024augmentations}, extending it to signed networks, bounding it relative to unweighted degrees, and formulating it computationally via SpSpMM.
+The core concept of utilizing 4-cycles to circumvent bipartite collapse is an intuitive progression in network science, explicitly building upon the Augmented Forman 4-cycle (AF4) structure established by Fesser et al. \cite{fesser2024augmentations}. Where AF4 introduces the fundamental 4-cycle augmentation, this paper formally advances the framework by adding:
+\begin{itemize}
+    \item \textbf{Signed and Structural Weighting:} Extending the cycle boundary operators to handle signed network ties ($\pm 1$) while normalizing by theoretical volume limits $\max(1,(d(u)-1)(d(v)-1))$.
+    \item \textbf{Computational Formulation:} The derivation of the $\mathcal{O}(|E|d_{max})$ sparse matrix identity (\cref{eq:sigma_c4}) via row-by-row SpSpMM extraction, permitting the metric's exact application to massive scale-free datasets.
+    \item \textbf{Spectral and Cheeger Heuristics:} Formulating explicit geometric conjectures linking discrete cycle density to continuous spectral gap diffusion limits.
+\end{itemize}
 
 \section{Limitations \& Sparsity Density Threshold}
 While the Cycle-Aware Forman-Ricci curvature successfully resolves the bipartite metric collapse and provides highly scalable topological evaluations, the framework is subject to several mathematical and evaluation limitations:
@@ -404,6 +410,18 @@ In this paper, we resolve the bipartite metric collapse of Forman-Ricci Curvatur
 
 \section*{Data Availability Statement}
 All code and synthetic data generation scripts utilized in this manuscript are openly accessible via GitHub at \url{https://github.com/The-MathKing/cycle-aware-frc}. The MovieLens-1M dataset is publicly available via GroupLens. All structural topologies and algorithm configurations can be fully reproduced.
+
+\appendix
+\section{Empirical Verification of Eq.~3.2}
+To provide a concrete illustration of the sparse matrix identity (\cref{eq:sigma_c4}) used for 4-cycle extraction, consider the fully connected bipartite graph $K_{2,2}$. Let $U = \{0, 1\}$ and $V = \{2, 3\}$. The adjacency matrix $A$ is given by:
+\begin{equation}
+A = \begin{bmatrix} 0 & 0 & 1 & 1 \\ 0 & 0 & 1 & 1 \\ 1 & 1 & 0 & 0 \\ 1 & 1 & 0 & 0 \end{bmatrix}
+\end{equation}
+For any edge, say $e=(0,2)$, the unweighted degrees are $d(0)=2$ and $d(2)=2$. The only 4-cycle containing this edge is the sequence $0 \to 2 \to 1 \to 3 \to 0$. Thus, $\Sigma_{C_4}(0,2)$ should be exactly 1. Computing $A^3$ yields $(A^3)_{0,2} = 4$. Using the identity from \cref{eq:sigma_c4}:
+\begin{equation}
+\Sigma_{C_4}(0,2) = A_{0,2} (A^3)_{0,2} - d(0) - d(2) + 1 = 1(4) - 2 - 2 + 1 = 1
+\end{equation}
+This confirms that subtracting the degree terms exactly removes the degenerate walks (e.g., $0 \to 2 \to 0 \to 2$ and $0 \to 3 \to 0 \to 2$), isolating the true 4-cycle count without degree-inflation. A programmatic validation script is also provided in the supplementary codebase.
 
 \bibliographystyle{siamplain}
 \bibliography{references}
